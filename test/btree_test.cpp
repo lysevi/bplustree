@@ -11,7 +11,7 @@ BOOST_AUTO_TEST_CASE(BtreeTest) {
 	trees::BTree t(n);
 	BOOST_CHECK_EQUAL(t.find(10), 0);
 
-	for (int i = 0; i < (2 * n); ++i) {
+    for (int i = 0; i < int(2 * n); ++i) {
 		bool insert_status = t.insert(i);
 		BOOST_CHECK(insert_status);
 		BOOST_CHECK_EQUAL(t.find(i), i);
@@ -19,6 +19,7 @@ BOOST_AUTO_TEST_CASE(BtreeTest) {
 	/*t.print();*/
 	bool insert_status = t.insert(111);
 	BOOST_CHECK(insert_status);
+    //t.print();
 	BOOST_CHECK_EQUAL(t.find(111), 111);
 	//t.print();
 	for (int i = 200; i < 300; i++) {
@@ -45,7 +46,6 @@ BOOST_AUTO_TEST_CASE(BtreeTest) {
 	for (int i = 50; i < 100; i++) {
 		//t.print();
 		if (i == 55) {
-			int a = 3;
 			t.print();
 		}
 		insert_status = t.insert(i);
@@ -56,7 +56,6 @@ BOOST_AUTO_TEST_CASE(BtreeTest) {
 			BOOST_FAIL(ss.str());
 		}
 		if (i == 55) {
-			int a = 3;
 			t.print();
 		}
 		BOOST_CHECK_EQUAL(t.find(i), i);

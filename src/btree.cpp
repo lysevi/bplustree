@@ -11,6 +11,7 @@ BTree::Node::~Node() {
 	this->childs.clear();
 	this->vals.clear();
 }
+
 void BTree::Node::insertValue(int key) {
 
 	if (vals.size() == 0) {
@@ -35,9 +36,32 @@ void BTree::Node::insertValue(int key) {
 	this->vals.push_back(key);
 }
 
+void BTree::Node::insertChild(Node::Ptr C){
+    if (childs.size() == 0) {
+        childs.push_back(C);
+        return;
+    } else {
+        if ((*childs.begin())->vals.back() < C->vals.front()) {
+            childs.push_back(C);
+            return;
+        }
+    }
+
+    for (auto it = this->childs.begin(); it != this->childs.end(); ++it) {
+        if (it != this->childs.begin()) {
+            if ((C->vals.front() > (*it)->vals.back()) &&
+                    (C->vals.back() < (*(it - 1))->vals.front())) {
+                this->childs.insert(it, C);
+                return;
+            }
+        }
+    }
+
+    this->childs.push_back(C);
+}
 BTree::BTree(size_t N) :n(N) {
 	m_root = BTree::make_node();
-};
+}
 
 BTree::~BTree() {
 	m_root = nullptr;
@@ -48,7 +72,7 @@ BTree::Node::Ptr BTree::make_node() {
 }
 
 int BTree::find(int key)const {
-	Node::Ptr node = nullptr;
+    Node::Ptr node = m_root;
 	int res;
 	if (this->iner_find(key,m_root, node, res)) {
 		assert(node != nullptr);
@@ -60,14 +84,14 @@ int BTree::find(int key)const {
 }
 
 bool BTree::iner_find(int key, Node::Ptr cur_node, Node::Ptr&out_ptr, int &out_res)const {
-	for (int i = 0; i<cur_node->vals.size();i++){
+    for (size_t i = 0; i<cur_node->vals.size();i++){
 		if (cur_node->vals[i] == key) {
 			out_res = cur_node->vals[i];
 			out_ptr = cur_node;
 			return true;
 		}
 		if (cur_node->vals[i] > key) {
-			if (cur_node->childs.size() > 0) {
+            if ((cur_node->childs.size() > 0) && (i!=0)) {
 				return iner_find(key, cur_node->childs[i - 1], out_ptr, out_res);
 			} else {
 				out_res = 0;
@@ -88,6 +112,7 @@ bool BTree::iner_find(int key, Node::Ptr cur_node, Node::Ptr&out_ptr, int &out_r
 		out_ptr = cur_node;
 		return false;
 	}
+    return false;
 }
 
 bool BTree::isFull(const BTree::Node::Ptr node)const {
@@ -95,7 +120,7 @@ bool BTree::isFull(const BTree::Node::Ptr node)const {
 }
 
 bool BTree::insert(int key) {
-	Node::Ptr node = nullptr;
+    Node::Ptr node = nullptr;
 	int res;
 	if (this->iner_find(key,m_root, node, res)) {
 		return false;
@@ -148,23 +173,20 @@ void BTree::split_node(BTree::Node::Ptr node) {
 	
 	if (auto parent = node->parent.lock()) {
 		node2insert = parent;
-		node2insert->childs.push_back(C);
+        node2insert->insertChild(C);
 		C->parent = node->parent;
 	} else {
 		node2insert = this->make_node();
 		m_root->parent = node2insert;
 		m_root = node2insert;
-		node2insert->childs.push_back(node);
-		node2insert->childs.push_back(C);
+        node2insert->insertChild(node);
+        node2insert->insertChild(C);
 		node->parent = m_root;
 		C->parent = m_root;
 	}
 	node2insert->insertValue(midle);
 	
 	if (isFull(node2insert)) {
-		if (node2insert == m_root) {
-			int a = 3;
-		}
 		split_node(node2insert);
 	}
 }
