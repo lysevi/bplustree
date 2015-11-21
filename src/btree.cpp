@@ -39,13 +39,17 @@ void BTree::Node::insertValue(int key) {
 }
 
 void BTree::Node::insertChild(int key, Node::Ptr C){
+    if(key==this->vals.back()){
+        this->childs.push_back(C);
+        return;
+    }
     for(size_t i=0;i<this->vals.size();++i){
         if(this->vals[i]==key){
             auto pos=this->childs.begin()+i;
             if(pos==this->childs.end()){
                 this->childs.push_back(C);
             }else{
-                this->childs.insert(pos,C);
+                this->childs.insert(pos+1,C);
             }
             return;
         }
@@ -88,9 +92,9 @@ bool BTree::iner_find(int key, Node::Ptr cur_node, Node::Ptr&out_ptr, int &out_r
             out_res = 0;
             out_ptr=cur_node;
             return false;
-        }else{
+        }/*else{
             return iner_find(key, cur_node->childs.front(), out_ptr, out_res);
-        }
+        }*/
     }
     for (size_t i = 0; i<cur_node->vals.size();i++){
 		if (cur_node->vals[i] == key) {
@@ -100,12 +104,14 @@ bool BTree::iner_find(int key, Node::Ptr cur_node, Node::Ptr&out_ptr, int &out_r
 		}
 		if (cur_node->vals[i] > key) {
             if ((cur_node->childs.size() > 0) && (i!=0)) {
-				return iner_find(key, cur_node->childs[i - 1], out_ptr, out_res);
-			} else {
-				out_res = 0;
-				out_ptr = cur_node;
-				return false;
-			}
+                return iner_find(key, cur_node->childs[i], out_ptr, out_res);
+            } /*else {
+
+                    out_res = 0;
+                    out_ptr = cur_node;
+                    return false;
+
+            }*/
 		}
 	}
 	if ((cur_node->childs.size() != 0) && (cur_node->vals.size() != 0)) {

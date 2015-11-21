@@ -23,11 +23,10 @@ BOOST_AUTO_TEST_CASE(BtreeTest) {
 	BOOST_CHECK_EQUAL(t.find(111), 111);
 	//t.print();
 	for (int i = 200; i < 300; i++) {
-		//t.print();
-		/*if (i == 223) {
-			int a = 3;
-			t.print();
-		}*/
+//        t.print();
+        if (i == 203) {
+        //	t.print();
+        }
 		insert_status = t.insert(i);
 		//t.print();
 		if (!insert_status) {
@@ -35,29 +34,28 @@ BOOST_AUTO_TEST_CASE(BtreeTest) {
 			ss << " insert " << i << " error";
 			BOOST_FAIL(ss.str());
 		}
-		/*if (i == 223) {
-			int a = 3;
-			t.print();
-		}*/
+        if (i == 203) {
+    //		t.print();
+        }
 		BOOST_CHECK_EQUAL(t.find(i), i);
 	}
 
 
 	for (int i = 50; i < 100; i++) {
-		//t.print();
-        if (i == 63) {
-			t.print();
-		}
+//        t.print();
+        if (i == 77) {
+            t.print();
+        }
 		insert_status = t.insert(i);
-		//t.print();
+        //t.print();
 		if (!insert_status) {
 			std::stringstream ss;
 			ss << " insert " << i << " error";
 			BOOST_FAIL(ss.str());
 		}
-        if (i == 63) {
-			t.print();
-		}
+        if (i == 77) {
+            t.print();
+        }
 		BOOST_CHECK_EQUAL(t.find(i), i);
 	}
 }
