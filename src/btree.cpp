@@ -92,9 +92,9 @@ bool BTree::iner_find(int key, Node::Ptr cur_node, Node::Ptr&out_ptr, int &out_r
             out_res = 0;
             out_ptr=cur_node;
             return false;
-        }/*else{
+        }else{
             return iner_find(key, cur_node->childs.front(), out_ptr, out_res);
-        }*/
+        }
     }
     for (size_t i = 0; i<cur_node->vals.size();i++){
 		if (cur_node->vals[i] == key) {
