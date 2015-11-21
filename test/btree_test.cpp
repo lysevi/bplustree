@@ -5,8 +5,10 @@
 #include <btree.h>
 
 #include <sstream>
+#include <set>
 
 BOOST_AUTO_TEST_CASE(BtreeTest) {
+    std::set<int> inserted;
 	const size_t n = 3;
 	trees::BTree t(n);
     BOOST_CHECK_EQUAL(t.find(10), 0);
@@ -17,6 +19,7 @@ BOOST_AUTO_TEST_CASE(BtreeTest) {
         insert_status = t.insert(i);
 		BOOST_CHECK(insert_status);
 		BOOST_CHECK_EQUAL(t.find(i), i);
+        inserted.insert(i);
 	}
     insert_status = t.insert(111);
 	BOOST_CHECK(insert_status);
@@ -30,6 +33,7 @@ BOOST_AUTO_TEST_CASE(BtreeTest) {
 			BOOST_FAIL(ss.str());
 		}
         BOOST_CHECK_EQUAL(t.find(i), i);
+        inserted.insert(i);
 	}
 
 
@@ -41,6 +45,7 @@ BOOST_AUTO_TEST_CASE(BtreeTest) {
 			BOOST_FAIL(ss.str());
 		}
 		BOOST_CHECK_EQUAL(t.find(i), i);
+        inserted.insert(i);
 	}
 
     for (int i = 30; i < 40; i++) {
@@ -51,6 +56,7 @@ BOOST_AUTO_TEST_CASE(BtreeTest) {
             BOOST_FAIL(ss.str());
         }
         BOOST_CHECK_EQUAL(t.find(i), i);
+        inserted.insert(i);
     }
 
     for (int i = 300; i < 400; i++) {
@@ -60,6 +66,11 @@ BOOST_AUTO_TEST_CASE(BtreeTest) {
             ss << " insert " << i << " error";
             BOOST_FAIL(ss.str());
         }
+        BOOST_CHECK_EQUAL(t.find(i), i);
+        inserted.insert(i);
+    }
+
+    for(auto i: inserted){
         BOOST_CHECK_EQUAL(t.find(i), i);
     }
 }
