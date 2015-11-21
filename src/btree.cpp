@@ -77,6 +77,21 @@ int BTree::find(int key)const {
 }
 
 bool BTree::iner_find(int key, Node::Ptr cur_node, Node::Ptr&out_ptr, int &out_res)const {
+    if(cur_node->vals.size()==0){
+        out_res = 0;
+        out_ptr=cur_node;
+        return false;
+    }
+
+    if(key< cur_node->vals.front()){
+        if(cur_node->childs.size()==0){
+            out_res = 0;
+            out_ptr=cur_node;
+            return false;
+        }else{
+            return iner_find(key, cur_node->childs.front(), out_ptr, out_res);
+        }
+    }
     for (size_t i = 0; i<cur_node->vals.size();i++){
 		if (cur_node->vals[i] == key) {
 			out_res = cur_node->vals[i];

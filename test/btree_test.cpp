@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE(BtreeTest) {
 
 	for (int i = 50; i < 100; i++) {
 		//t.print();
-		if (i == 55) {
+        if (i == 63) {
 			t.print();
 		}
 		insert_status = t.insert(i);
@@ -55,7 +55,7 @@ BOOST_AUTO_TEST_CASE(BtreeTest) {
 			ss << " insert " << i << " error";
 			BOOST_FAIL(ss.str());
 		}
-		if (i == 55) {
+        if (i == 63) {
 			t.print();
 		}
 		BOOST_CHECK_EQUAL(t.find(i), i);
