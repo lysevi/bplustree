@@ -18,7 +18,7 @@ namespace trees
 			Node();
 			~Node();
 			void insertValue(int key);
-            void insertChild(Node::Ptr C);
+            void insertChild(int key,Node::Ptr C);
 		};
 
 	public:

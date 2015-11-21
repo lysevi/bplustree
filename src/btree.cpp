@@ -26,7 +26,9 @@ void BTree::Node::insertValue(int key) {
 
 	for (auto it = this->vals.begin(); it != this->vals.end(); ++it) {
 		if (it != this->vals.begin()) {
-			if ((key > *it) && (key < *(it - 1))) {
+            auto cur=*it;
+            auto prev=*(it-1);
+            if ((key < cur) && (key > prev)) {
 				this->vals.insert(it, key);
 				return;
 			}
@@ -36,28 +38,19 @@ void BTree::Node::insertValue(int key) {
 	this->vals.push_back(key);
 }
 
-void BTree::Node::insertChild(Node::Ptr C){
-    if (childs.size() == 0) {
-        childs.push_back(C);
-        return;
-    } else {
-        if ((*childs.begin())->vals.back() < C->vals.front()) {
-            childs.push_back(C);
+void BTree::Node::insertChild(int key, Node::Ptr C){
+    for(size_t i=0;i<this->vals.size();++i){
+        if(this->vals[i]==key){
+            auto pos=this->childs.begin()+i;
+            if(pos==this->childs.end()){
+                this->childs.push_back(C);
+            }else{
+                this->childs.insert(pos,C);
+            }
             return;
         }
     }
-
-    for (auto it = this->childs.begin(); it != this->childs.end(); ++it) {
-        if (it != this->childs.begin()) {
-            if ((C->vals.front() > (*it)->vals.back()) &&
-                    (C->vals.back() < (*(it - 1))->vals.front())) {
-                this->childs.insert(it, C);
-                return;
-            }
-        }
-    }
-
-    this->childs.push_back(C);
+    assert(false);
 }
 BTree::BTree(size_t N) :n(N) {
 	m_root = BTree::make_node();
@@ -173,18 +166,21 @@ void BTree::split_node(BTree::Node::Ptr node) {
 	
 	if (auto parent = node->parent.lock()) {
 		node2insert = parent;
-        node2insert->insertChild(C);
+        node2insert->insertValue(midle);
+
+        node2insert->insertChild(midle,C);
 		C->parent = node->parent;
 	} else {
 		node2insert = this->make_node();
 		m_root->parent = node2insert;
 		m_root = node2insert;
-        node2insert->insertChild(node);
-        node2insert->insertChild(C);
+        node2insert->insertValue(midle);
+        node2insert->childs.push_back(node);
+        node2insert->childs.push_back(C);
 		node->parent = m_root;
 		C->parent = m_root;
 	}
-	node2insert->insertValue(midle);
+
 	
 	if (isFull(node2insert)) {
 		split_node(node2insert);
