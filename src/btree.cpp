@@ -8,6 +8,11 @@ BTree::Node::Node() {
 	is_leaf = false;
 }
 
+BTree::Node::Node(int cap) {
+	is_leaf = false;
+	this->childs.reserve(cap);
+	this->vals.reserve(cap);
+}
 BTree::Node::~Node() {
     this->childs.clear();
     this->vals.clear();
@@ -25,15 +30,19 @@ void BTree::Node::insertValue(int key) {
         }
     }
 
+	int step = 0;
+	std::vector<int>::iterator prev_it;
     for (auto it = this->vals.begin(); it != this->vals.end(); ++it) {
-        if (it != this->vals.begin()) {
+        if (step!=0) {
             auto cur=*it;
-            auto prev=*(it-1);
+            auto prev=*prev_it;
             if ((key < cur) && (key > prev)) {
                 this->vals.insert(it, key);
                 return;
             }
         }
+		prev_it = it;
+		step += 1;
     }
 
     this->vals.push_back(key);
@@ -67,7 +76,7 @@ BTree::~BTree() {
 }
 
 BTree::Node::Ptr BTree::make_node() {
-    return std::make_shared<BTree::Node>();
+    return std::make_shared<BTree::Node>(this->n);
 }
 
 int BTree::find(int key)const {

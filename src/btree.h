@@ -20,6 +20,7 @@ namespace trees
 			Node::Weak parent;
 			Node::Weak next;
 			Node();
+			Node(int cap);
 			~Node();
 			void insertValue(int key);
             void insertChild(int key,Node::Ptr C);
@@ -35,7 +36,7 @@ namespace trees
 		bool insert(int key); //true if key was inserted. false, if not (maybe she alrady exists)
 		void print()const;
 	protected:
-		static Node::Ptr make_node();
+		Node::Ptr make_node();
 		bool iner_find(int key,Node::Ptr cur_node, Node::Ptr&out_ptr, int &out_res)const; // return last_node, false if fail, or cur_node,true;
 		bool isFull(const Node::Ptr node)const;
 		void split_node(Node::Ptr node);

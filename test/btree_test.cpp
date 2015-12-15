@@ -93,7 +93,7 @@ BOOST_AUTO_TEST_CASE(BtreeTest) {
 	
 	trees::BTree t2(10);
 	clock_t read_t0 = clock();
-	for (int i = 0; i < 1000000; i++) {
+	for (int i = 0; i < 100000; i++) {
 		t2.insert(i);
 	}
 	clock_t read_t1 = clock();
