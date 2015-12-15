@@ -5,6 +5,7 @@
 using namespace trees;
 
 BTree::Node::Node() {
+	is_leaf = false;
 }
 
 BTree::Node::~Node() {
@@ -58,6 +59,7 @@ void BTree::Node::insertChild(int key, Node::Ptr C){
 }
 BTree::BTree(size_t N) :n(N) {
     m_root = BTree::make_node();
+	m_root->is_leaf = true;
 }
 
 BTree::~BTree() {
@@ -81,12 +83,22 @@ int BTree::find(int key)const {
 }
 
 bool BTree::iner_find(int key, Node::Ptr cur_node, Node::Ptr&out_ptr, int &out_res)const {
+	if (cur_node->is_leaf) 
+	{
+		out_res = key;
+		out_ptr = cur_node;
+		if (cur_node->vals.size() != 0)
+			return true;
+		else
+			return false;
+	}
+
     if(cur_node->vals.size()==0){
         out_res = 0;
         out_ptr=cur_node;
         return false;
     }
-
+	
     if(key< cur_node->vals.front()){
         if(cur_node->childs.size()==0){
             out_res = 0;
@@ -97,22 +109,22 @@ bool BTree::iner_find(int key, Node::Ptr cur_node, Node::Ptr&out_ptr, int &out_r
         }
     }
     for (size_t i = 0; i<cur_node->vals.size();i++){
-        if (cur_node->vals[i] == key) {
+        /*if (cur_node->vals[i] == key) {
             out_res = cur_node->vals[i];
             out_ptr = cur_node;
             return true;
-        }
+        }*/
         if (cur_node->vals[i] > key) {
             if ((cur_node->childs.size() > 0) && (i!=0)) {
-                return iner_find(key, cur_node->childs[i], out_ptr, out_res);
+                return iner_find(key, cur_node->childs[i-1], out_ptr, out_res);
             }
         }
     }
     if ((cur_node->childs.size() != 0) && (cur_node->vals.size() != 0)) {
-        if (key< cur_node->vals.front()) {
+        if (key<= cur_node->vals.front()) {
             return iner_find(key, cur_node->childs.front(), out_ptr, out_res);
         }
-        if (key> cur_node->vals.back()) {
+        if (key>= cur_node->vals.back()) {
             return iner_find(key, cur_node->childs.back(), out_ptr, out_res);
         }
     } else {
@@ -128,22 +140,20 @@ bool BTree::isFull(const BTree::Node::Ptr node)const {
 }
 
 bool BTree::insert(int key) {
-    Node::Ptr node = nullptr;
-    int res;
-    if (this->iner_find(key,m_root, node, res)) {
-        return false;
-    } else {
-        assert(node != nullptr);
-        if (!isFull(node)) {
-            node->insertValue(key);
-            return true;
-        } else { //split
-            node->insertValue(key);
-            this->split_node(node);
-            return true;
-        }
-        return false;
-    }
+	Node::Ptr node = nullptr;
+	int res;
+	this->iner_find(key, m_root, node, res);
+	assert(node != nullptr);
+	if (!isFull(node)) {
+		node->insertValue(key);
+		return true;
+	} else { //split
+		node->insertValue(key);
+		this->split_node(node);
+		return true;
+	}
+	return false;
+
 }
 
 void BTree::split_node(BTree::Node::Ptr node) {
@@ -151,12 +161,13 @@ void BTree::split_node(BTree::Node::Ptr node) {
     C->vals = node->vals;
 
     auto midle = C->vals[(C->vals.size() / 2)];
-    auto pos_half = C->vals.begin() + (C->vals.size() / 2 + 1);
+    auto pos_half = C->vals.begin() + (C->vals.size() / 2 );
     C->vals.erase(C->vals.begin(), pos_half);
+	C->is_leaf = node->is_leaf;
 
     pos_half = node->vals.begin() + (node->vals.size() / 2);
-    node->vals.erase(pos_half, node->vals.end());
-
+    node->vals.erase(pos_half-1, node->vals.end());
+	
     if (node->childs.size() > 0) {
         std::vector<Node::Ptr> new_childs;
         std::vector<Node::Ptr> old_childs;

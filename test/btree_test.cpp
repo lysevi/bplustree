@@ -71,6 +71,11 @@ BOOST_AUTO_TEST_CASE(BtreeTest) {
     }
 
     for(auto i: inserted){
-        BOOST_CHECK_EQUAL(t.find(i), i);
+		auto res=t.find(i);
+		if (res != i) {
+			std::stringstream ss;
+			ss << " read " << i << " error";
+			BOOST_FAIL(ss.str());
+		}
     }
 }
