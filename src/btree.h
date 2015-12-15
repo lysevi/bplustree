@@ -8,6 +8,7 @@ namespace trees
 
 	class BTree
 	{
+	public:
 		struct Node
 		{
 			typedef std::shared_ptr<Node> Ptr;
@@ -15,7 +16,9 @@ namespace trees
 			std::vector<int> vals;       // n >= size < 2*n
 			std::vector<Ptr> childs;   // size(vals)+1
 			bool is_leaf;
+
 			Node::Weak parent;
+			Node::Weak next;
 			Node();
 			~Node();
 			void insertValue(int key);
@@ -28,6 +31,7 @@ namespace trees
 		~BTree();
 
 		int find(int key)const;
+		Node::Weak  find_node(int key)const;
 		bool insert(int key); //true if key was inserted. false, if not (maybe she alrady exists)
 		void print()const;
 	protected:

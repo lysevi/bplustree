@@ -82,6 +82,13 @@ int BTree::find(int key)const {
     }
 }
 
+BTree::Node::Weak  BTree::find_node(int key)const {
+	Node::Ptr node = m_root;
+	int res;
+	this->iner_find(key, m_root, node, res);
+	return node;
+}
+
 bool BTree::iner_find(int key, Node::Ptr cur_node, Node::Ptr&out_ptr, int &out_res)const {
 	if (cur_node->is_leaf) 
 	{
@@ -152,8 +159,6 @@ bool BTree::insert(int key) {
 		this->split_node(node);
 		return true;
 	}
-	return false;
-
 }
 
 void BTree::split_node(BTree::Node::Ptr node) {
@@ -167,7 +172,9 @@ void BTree::split_node(BTree::Node::Ptr node) {
 
     pos_half = node->vals.begin() + (node->vals.size() / 2);
     node->vals.erase(pos_half-1, node->vals.end());
-	
+	auto tmp = node->next;
+	node->next = C;
+	C->next = tmp;
     if (node->childs.size() > 0) {
         std::vector<Node::Ptr> new_childs;
         std::vector<Node::Ptr> old_childs;
@@ -207,7 +214,9 @@ void BTree::split_node(BTree::Node::Ptr node) {
         C->parent = m_root;
     }
 
-
+	if (node->next.lock() == nullptr) {
+		int a = 3;
+	}
     if (isFull(node2insert)) {
         split_node(node2insert);
     }

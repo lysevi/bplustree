@@ -5,6 +5,7 @@
 #include <btree.h>
 
 #include <sstream>
+#include <iostream>
 #include <set>
 
 BOOST_AUTO_TEST_CASE(BtreeTest) {
@@ -78,4 +79,16 @@ BOOST_AUTO_TEST_CASE(BtreeTest) {
 			BOOST_FAIL(ss.str());
 		}
     }
+
+	/*auto start_node_w=t.find_node(-11);
+	auto stop_node_w = t.find_node(300);
+	auto start_node = start_node_w.lock();
+	auto stop_node = stop_node_w.lock();
+	while (start_node != stop_node) {
+		for (size_t i = 0; i < start_node->vals.size(); i++) {
+			std::cout << " " << start_node->vals[i];
+		}
+		start_node = start_node->next.lock();
+	}*/
+	
 }
