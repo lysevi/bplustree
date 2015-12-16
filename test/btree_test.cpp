@@ -27,16 +27,17 @@ BOOST_AUTO_TEST_CASE(BtreeTest) {
 	BOOST_CHECK(insert_status);
 	BOOST_CHECK_EQUAL(t.find(111), 110);
 
-    for (int i = 200; i < 300; i++) {
-		insert_status = t.insert(i, i - 1);
-		if (!insert_status) {
-			std::stringstream ss;
-			ss << " insert " << i << " error";
-			BOOST_FAIL(ss.str());
-		}
-		BOOST_CHECK_EQUAL(t.find(i), i - 1);
+    //for (int i = 200; i < 300; i++) {
+    for (int i = 200; i < 204; i++) {
+        insert_status = t.insert(i, i - 1);
+        if (!insert_status) {
+            std::stringstream ss;
+            ss << " insert " << i << " error";
+            BOOST_FAIL(ss.str());
+        }
+        BOOST_CHECK_EQUAL(t.find(i), i - 1);
         inserted.insert(i);
-	}
+    }
 
 //    for (int i = 50; i < 100; i++) {
 //        if(i==59){
