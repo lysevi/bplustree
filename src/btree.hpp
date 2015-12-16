@@ -218,6 +218,9 @@ namespace trees{
 			node2insert = this->make_node();
 			m_root->parent = node2insert;
 			m_root = node2insert;
+            if(!C->is_leaf){
+                C->vals.erase(C->vals.begin(),C->vals.begin()+1);
+            }
 			node2insert->insertValue(midle.first, midle.second);
 			node2insert->childs.push_back(node);
 			node2insert->childs.push_back(C);
