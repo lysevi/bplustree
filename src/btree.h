@@ -4,6 +4,7 @@
 #include <memory>
 #include <cassert>
 #include <iostream>
+#include <algorithm>
 
 namespace trees
 {
@@ -16,7 +17,7 @@ namespace trees
 		{
 			typedef std::shared_ptr<Node> Ptr;
 			typedef std::weak_ptr<Node> Weak;
-			std::vector<int> vals;       // n >= size < 2*n
+			std::vector<std::pair<Key,Value>> vals;       // n >= size < 2*n
 			std::vector<Ptr> childs;   // size(vals)+1
 			bool is_leaf;
 
@@ -25,8 +26,8 @@ namespace trees
 			Node();
 			Node(int cap);
 			~Node();
-			void insertValue(int key);
-            void insertChild(int key, typename Node::Ptr C);
+			void insertValue(Key key,Value val);
+			void insertChild(Key key, typename Node::Ptr C);
 		};
 
 	public:
@@ -34,13 +35,13 @@ namespace trees
 		BTree(size_t N);
 		~BTree();
 
-		int find(int key)const;
-		typename Node::Weak  find_node(int key)const;
-		bool insert(int key); //true if key was inserted. false, if not (maybe she alrady exists)
+		Value find(Key key)const;
+		typename Node::Weak  find_node(Key key)const;
+		bool insert(Key key, Value val); //true if key was inserted. false, if not (maybe she alrady exists)
 		void print()const;
 	protected:
 		typename Node::Ptr make_node();
-		bool iner_find(int key, typename Node::Ptr cur_node, typename Node::Ptr&out_ptr, int &out_res)const; // return last_node, false if fail, or cur_node,true;
+		bool iner_find(Key key, typename Node::Ptr cur_node, typename Node::Ptr&out_ptr, Value &out_res)const; // return last_node, false if fail, or cur_node,true;
 		bool isFull(const typename Node::Ptr node)const;
 		void split_node(typename Node::Ptr node);
 		void print(const typename Node::Ptr& root)const;

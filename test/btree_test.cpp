@@ -17,63 +17,63 @@ BOOST_AUTO_TEST_CASE(BtreeTest) {
     bool insert_status =false;
 
     for (int i = 0; i < int(2 * n); ++i) {
-        insert_status = t.insert(i);
+        insert_status = t.insert(i,i-1);
 		BOOST_CHECK(insert_status);
-		BOOST_CHECK_EQUAL(t.find(i), i);
+		BOOST_CHECK_EQUAL(t.find(i), i-1);
         inserted.insert(i);
 	}
-    insert_status = t.insert(111);
+    insert_status = t.insert(111,110);
 	BOOST_CHECK(insert_status);
-	BOOST_CHECK_EQUAL(t.find(111), 111);
+	BOOST_CHECK_EQUAL(t.find(111), 110);
 
     for (int i = 200; i < 300; i++) {
-		insert_status = t.insert(i);
+		insert_status = t.insert(i, i - 1);
 		if (!insert_status) {
 			std::stringstream ss;
 			ss << " insert " << i << " error";
 			BOOST_FAIL(ss.str());
 		}
-        BOOST_CHECK_EQUAL(t.find(i), i);
+		BOOST_CHECK_EQUAL(t.find(i), i - 1);
         inserted.insert(i);
 	}
 
 
 	for (int i = 50; i < 100; i++) {
-		insert_status = t.insert(i);
+		insert_status = t.insert(i, i - 1);
 		if (!insert_status) {
 			std::stringstream ss;
 			ss << " insert " << i << " error";
 			BOOST_FAIL(ss.str());
 		}
-		BOOST_CHECK_EQUAL(t.find(i), i);
+		BOOST_CHECK_EQUAL(t.find(i), i - 1);
         inserted.insert(i);
 	}
 
     for (int i = 30; i < 40; i++) {
-        insert_status = t.insert(i);
+        insert_status = t.insert(i,i-1);
         if (!insert_status) {
             std::stringstream ss;
             ss << " insert " << i << " error";
             BOOST_FAIL(ss.str());
         }
-        BOOST_CHECK_EQUAL(t.find(i), i);
+		BOOST_CHECK_EQUAL(t.find(i), i - 1);
         inserted.insert(i);
     }
 
     for (int i = 300; i < 400; i++) {
-        insert_status = t.insert(i);
+		insert_status = t.insert(i, i - 1);
         if (!insert_status) {
             std::stringstream ss;
             ss << " insert " << i << " error";
             BOOST_FAIL(ss.str());
         }
-        BOOST_CHECK_EQUAL(t.find(i), i);
+		BOOST_CHECK_EQUAL(t.find(i), i - 1);
         inserted.insert(i);
     }
 
     for(auto i: inserted){
 		auto res=t.find(i);
-		if (res != i) {
+		if (res != (i - 1)) {
 			std::stringstream ss;
 			ss << " read " << i << " error";
 			BOOST_FAIL(ss.str());
@@ -94,7 +94,7 @@ BOOST_AUTO_TEST_CASE(BtreeTest) {
 	trees::BTree<int, int> t2(10);
 	clock_t read_t0 = clock();
 	for (int i = 0; i < 100000; i++) {
-		t2.insert(i);
+		t2.insert(i,i);
 	}
 	clock_t read_t1 = clock();
 	std::cout<<"=> :" << " time: " << ((float)read_t1 - read_t0) / CLOCKS_PER_SEC<<std::endl;
