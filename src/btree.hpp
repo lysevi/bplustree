@@ -33,7 +33,7 @@ namespace trees{
 		}
 
 		int step = 0;
-		std::vector<std::pair<Key, Value>>::iterator prev_it;
+        typename std::vector<std::pair<Key, Value>>::iterator prev_it;
 		for (auto it = this->vals.begin(); it != this->vals.end(); ++it) {
 			if (step != 0) {
 				auto cur = *it;
@@ -71,13 +71,13 @@ namespace trees{
 	}
 	
 	template<class Key, class Value>
-	BTree<Key,Value>::BTree<Key,Value>(size_t N) :n(N) {
+    BTree<Key,Value>::BTree(size_t N) :n(N) {
 		m_root = BTree<Key,Value>::make_node();
 		m_root->is_leaf = true;
 	}
 	
 	template<class Key, class Value>
-	BTree<Key,Value>::~BTree<Key,Value>() {
+    BTree<Key,Value>::~BTree() {
 		m_root = nullptr;
 	}
 
@@ -88,7 +88,7 @@ namespace trees{
 
 	template<class Key, class Value>
 	Value BTree<Key, Value>::find(Key key)const {
-		Node::Ptr node = m_root;
+        typename Node::Ptr node = m_root;
 		int res;
 		if (this->iner_find(key, m_root, node, res)) {
 			assert(node != nullptr);
@@ -101,7 +101,7 @@ namespace trees{
 
 	template<class Key, class Value>
 	typename BTree<Key, Value>::Node::Weak  BTree<Key, Value>::find_node(Key key)const {
-		Node::Ptr node = m_root;
+        typename Node::Ptr node = m_root;
 		int res;
 		this->iner_find(key, m_root, node, res);
 		return node;
@@ -125,46 +125,25 @@ namespace trees{
 			}
 		}
 
-		if (cur_node->vals.size() == 0) {
-			out_res = Value();
-			out_ptr = cur_node;
-			return false;
+        if (key < cur_node->vals.front().first) {
+            return iner_find(key, cur_node->childs.front(), out_ptr, out_res);
+        }
+
+        for (size_t i = 0; i < cur_node->vals.size()-1; i++) {
+            auto cur=cur_node->vals[i].first;
+            auto nxt=cur_node->vals[i+1].first;
+            std::cout<<""<<cur<<nxt;
+            if((cur_node->vals[i].first<=key) && ((key<cur_node->vals[i+1].first))){
+                    return iner_find(key, cur_node->childs[i+1], out_ptr, out_res);
+            }
 		}
 
-		if (key < cur_node->vals.front().first) {
-			if (cur_node->childs.size() == 0) {
-				out_res = Value();
-				out_ptr = cur_node;
-				return false;
-			} else {
-				return iner_find(key, cur_node->childs.front(), out_ptr, out_res);
-			}
-		}
-		for (size_t i = 0; i < cur_node->vals.size(); i++) {
-			if (cur_node->vals[i].first == key) {
-				return iner_find(key, cur_node->childs[i - 1], out_ptr, out_res);
-			}
-			if (cur_node->vals[i].first > key) {
-				/*if ((cur_node->childs.size() > 0) && (i != 0) && cur_node->vals[i-1].first < key) {
-					return iner_find(key, cur_node->childs[i ], out_ptr, out_res);
-				}*/
-				if ((cur_node->childs.size() > 0) && (i != 0)) {
-					return iner_find(key, cur_node->childs[i - 1], out_ptr, out_res);
-				}
-			}
-		}
 		if ((cur_node->childs.size() != 0) && (cur_node->vals.size() != 0)) {
-			if (key <= cur_node->vals.front().first) {
-				return iner_find(key, cur_node->childs.front(), out_ptr, out_res);
-			}
 			if (key >= cur_node->vals.back().first) {
 				return iner_find(key, cur_node->childs.back(), out_ptr, out_res);
 			}
-		} else {
-			out_res = Value();
-			out_ptr = cur_node;
-			return false;
-		}
+        }
+
 		return false;
 	}
 
@@ -175,7 +154,7 @@ namespace trees{
 
 	template<class Key, class Value>
 	bool BTree<Key, Value>::insert(Key key, Value val) {
-		Node::Ptr node = nullptr;
+        typename Node::Ptr node = nullptr;
 		int res;
 		this->iner_find(key, m_root, node, res);
 		assert(node != nullptr);
@@ -200,15 +179,15 @@ namespace trees{
 		C->is_leaf = node->is_leaf;
 
 		pos_half = node->vals.begin() + (node->vals.size() / 2);
-		node->vals.erase(pos_half - 1, node->vals.end());
+        node->vals.erase(pos_half , node->vals.end());
 		auto tmp = node->next;
 		node->next = C;
 		C->next = tmp;
 		if (node->childs.size() > 0) {
-			std::vector<Node::Ptr> new_childs;
-			std::vector<Node::Ptr> old_childs;
+            std::vector<typename Node::Ptr> new_childs;
+            std::vector<typename Node::Ptr> old_childs;
 			for (auto c : node->childs) {
-				if (c->vals.front() > midle) {
+                if (c->vals.front().first >= midle.first) {
 					new_childs.push_back(c);
 				} else {
 					old_childs.push_back(c);
@@ -224,7 +203,7 @@ namespace trees{
 			}
 
 		}
-		Node::Ptr node2insert = nullptr;
+        typename Node::Ptr node2insert = nullptr;
 
 		if (auto parent = node->parent.lock()) {
 			node2insert = parent;
@@ -243,9 +222,6 @@ namespace trees{
 			C->parent = m_root;
 		}
 
-		if (node->next.lock() == nullptr) {
-			int a = 3;
-		}
 		if (isFull(node2insert)) {
 			split_node(node2insert);
 		}

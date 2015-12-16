@@ -49,6 +49,6 @@ namespace trees
 		size_t n;
 		typename Node::Ptr m_root;
 	};
-};
+}
 
 #include "btree.hpp"
