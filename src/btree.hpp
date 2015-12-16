@@ -131,7 +131,11 @@ namespace trees{
 
         for (size_t i = 0; i < cur_node->vals.size()-1; i++) {
             auto cur=cur_node->vals[i].first;
+//            if(cur==key){
+//                return iner_find(key, cur_node->childs[i], out_ptr, out_res);
+//            }
             auto nxt=cur_node->vals[i+1].first;
+
             if((cur<=key) && ((key<nxt))){
                     return iner_find(key, cur_node->childs[i+1], out_ptr, out_res);
             }

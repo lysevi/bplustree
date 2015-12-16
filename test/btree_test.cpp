@@ -28,7 +28,7 @@ BOOST_AUTO_TEST_CASE(BtreeTest) {
 	BOOST_CHECK_EQUAL(t.find(111), 110);
 
     //for (int i = 200; i < 300; i++) {
-    for (int i = 200; i < 204; i++) {
+    for (int i = 200; i < 300; i++) {
         insert_status = t.insert(i, i - 1);
         if (!insert_status) {
             std::stringstream ss;
