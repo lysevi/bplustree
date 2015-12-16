@@ -53,6 +53,6 @@ endif(CMAKE_COMPILER_IS_GNUCXX)
 
 enable_testing()
 
-add_subdirectory (src)
+add_subdirectory(src)
 add_subdirectory (test)
 

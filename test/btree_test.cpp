@@ -11,7 +11,7 @@
 BOOST_AUTO_TEST_CASE(BtreeTest) {
     std::set<int> inserted;
 	const size_t n = 3;
-	trees::BTree t(n);
+	trees::BTree<int,int> t(n);
     BOOST_CHECK_EQUAL(t.find(10), 0);
 
     bool insert_status =false;
@@ -91,7 +91,7 @@ BOOST_AUTO_TEST_CASE(BtreeTest) {
 		start_node = start_node->next.lock();
 	}*/
 	
-	trees::BTree t2(10);
+	trees::BTree<int, int> t2(10);
 	clock_t read_t0 = clock();
 	for (int i = 0; i < 100000; i++) {
 		t2.insert(i);

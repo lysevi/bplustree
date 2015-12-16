@@ -1,6 +1,6 @@
 include_directories(.)
 
-FILE(GLOB SRC "*.cpp" "*.h")
+FILE(GLOB SRC "*.cpp" "*.h" "*.hpp")
 
 if(MSVC)
         add_library(trees STATIC ${SRC})
