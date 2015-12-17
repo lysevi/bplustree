@@ -111,6 +111,29 @@ BOOST_AUTO_TEST_CASE(QueryRange) {
 	}
 }
 
+BOOST_AUTO_TEST_CASE(ArrayFuncs) {
+    const size_t test_count=2;
+    int t1[test_count][5]=
+    {
+        {1,3,4,5,0},
+        {1,3,4,5,0}
+    };
+    int t2[test_count][5]=
+    {
+        {1,2,3,4,5},
+        {1,2,3,4,5}
+    };
+    for(size_t test=0;test<test_count;test++){
+        trees::insert_to_array(t1[test], 5 ,4,2);
+        for(size_t i=0;i<5;i++){
+            if(t1[test][i]!=t2[test][i]){
+                std::stringstream ss{};
+                ss<<" test fail: #"<<test;
+                BOOST_FAIL(ss.str());
+            }
+        }
+    }
+}
 
 //BOOST_AUTO_TEST_CASE(OneKeyManyValues) {
 //	size_t insertion_count = 100;
