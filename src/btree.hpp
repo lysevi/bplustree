@@ -127,14 +127,36 @@ namespace trees{
 			}
 		}
 
-        for (size_t i = 0; i < cur_node->vals.size()-1; i++) {
+		
+   /*     for (size_t i = 0; i < cur_node->vals.size()-1; i++) {
             auto cur=cur_node->vals[i].first;
-            auto nxt=cur_node->vals[i+1].first;
+            auto nxt=cur_node->vals[i+1].first;*/
 
-            if((cur<=key) && ((key<nxt))){
-                    return iner_find(key, cur_node->childs[i+1], out_ptr, out_res);
+            //if((cur<=key) && ((key<nxt)))
+			{
+				auto kv = std::make_pair(key, Value());
+				auto low_bound = std::lower_bound(cur_node->vals.begin(), cur_node->vals.end(), kv,
+												  [key](const std::pair<Key, Value> &v, const std::pair<Key, Value> &v2) {
+					return (v.first < v2.first);
+				});
+				
+				
+				//if ((low_bound != cur_node->vals.end())) 
+				{
+					auto nxt_it = low_bound + 1;
+					if (low_bound->first != kv.first) {
+						low_bound--;
+						nxt_it--;
+					}
+					if (key < nxt_it->first) {
+						auto d = std::distance(cur_node->vals.begin(), low_bound);
+						return iner_find(key, cur_node->childs[d+1], out_ptr, out_res);
+					}
+					
+				}
+                  /*return iner_find(key, cur_node->childs[i+1], out_ptr, out_res);*/
             }
-		}
+		/*}*/
 
 		
 
