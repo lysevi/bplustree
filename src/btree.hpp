@@ -190,13 +190,23 @@ namespace trees{
 			C->vals.erase(C->vals.begin(), C->vals.begin() + 1);
 		}
 		if (node->childs.size() > 0) {
-            std::vector<typename Node::Ptr> new_childs;
-            std::vector<typename Node::Ptr> old_childs;
+			size_t new_count = 0;
+			size_t old_count = 0;
+			for (auto c : node->childs) {
+				if (c->vals.front().first >= midle.first) {
+					new_count++;
+				} else {
+					old_count++;
+				}
+			}
+			std::vector<typename Node::Ptr> new_childs{ new_count };
+			std::vector<typename Node::Ptr> old_childs{ old_count };
+			new_count = old_count = 0;
 			for (auto c : node->childs) {
                 if (c->vals.front().first >= midle.first) {
-					new_childs.push_back(c);
+					new_childs[new_count++]=c;
 				} else {
-					old_childs.push_back(c);
+					old_childs[old_count++] = c;
 				}
 			}
 			node->childs = old_childs;
