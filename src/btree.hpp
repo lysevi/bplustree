@@ -32,21 +32,11 @@ namespace trees{
 			}
 		}
 
-		int step = 0;
-		Key prev_it;
-		for (int  i = 0; i < this->vals.size(); ++i) {
-			auto cur_item = this->vals[i];
-			if (step != 0) {
-				auto cur = cur_item.first;
-				auto prev = prev_it;
-				if ((key < cur) && (key > prev)) {
-					auto it = this->vals.begin() + i;
-					this->vals.insert(it, kv);
-					return;
-				}
-			}
-			prev_it = cur_item.first;
-			step += 1;
+		auto lb_iter = std::lower_bound(this->vals.begin(), this->vals.end(), kv,
+										[](const std::pair<Key, Value> &l, const std::pair<Key, Value> &r){return l.first < r.first; });
+		if (lb_iter != this->vals.end()) {
+			this->vals.insert(lb_iter, kv);
+			return;
 		}
 
 		this->vals.push_back(kv);
@@ -112,9 +102,9 @@ namespace trees{
 	template<class Key, class Value>
 	bool BTree<Key, Value>::iner_find(Key key, typename Node::Ptr cur_node, typename Node::Ptr&out_ptr, Value &out_res)const {
 		if (cur_node->is_leaf) {
-			auto find_res=std::find_if(cur_node->vals.begin(), cur_node->vals.end(), 
-									   [key](const std::pair<Key, Value> &v) {
-				return (v.first == key);
+			auto find_res = std::lower_bound(cur_node->vals.begin(), cur_node->vals.end(), std::make_pair(key, Value()),
+										   [key](const std::pair<Key, Value> &v, const std::pair<Key, Value> &v2) {
+				return (v.first < v2.first);
 									});
 
 			out_ptr = cur_node;
@@ -131,6 +121,13 @@ namespace trees{
             return iner_find(key, cur_node->childs[0], out_ptr, out_res);
         }
 
+		if ((cur_node->childs.size() != 0) && (cur_node->vals.size() != 0)) {
+			if (key >= cur_node->vals[cur_node->vals.size() - 1].first) {
+				auto last = cur_node->childs[cur_node->childs.size() - 1];
+				return iner_find(key, last, out_ptr, out_res);
+			}
+		}
+
         for (size_t i = 0; i < cur_node->vals.size()-1; i++) {
             auto cur=cur_node->vals[i].first;
             auto nxt=cur_node->vals[i+1].first;
@@ -140,12 +137,7 @@ namespace trees{
             }
 		}
 
-		if ((cur_node->childs.size() != 0) && (cur_node->vals.size() != 0)) {
-			if (key >= cur_node->vals[cur_node->vals.size()-1].first) {
-				auto last = cur_node->childs[cur_node->childs.size()-1];
-				return iner_find(key, last, out_ptr, out_res);
-			}
-        }
+		
 
 		return false;
 	}
