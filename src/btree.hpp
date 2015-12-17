@@ -9,8 +9,8 @@ namespace trees{
 	template<class Key, class Value>
 	BTree<Key, Value>::Node::Node(size_t cap) {
 		is_leaf = false;
-		this->childs.reserve(cap);
-		this->vals.reserve(cap);
+        this->childs.reserve(cap+1);
+        this->vals.reserve(cap+1);
 	}
 	
 	template<class Key, class Value>
@@ -165,7 +165,7 @@ namespace trees{
 
 	template<class Key, class Value>
 	bool BTree<Key, Value>::isFull(const typename BTree<Key, Value>::Node::Ptr node)const {
-		return node->vals.size() >= (2 * n);
+        return (node->vals.size()+1) >= (2 * n);
 	}
 
 	template<class Key, class Value>
