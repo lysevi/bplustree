@@ -2,6 +2,7 @@
 #include <ctime>
 #include <sstream>
 #include <map>
+#include <cstring>
 struct BigData
 {
 	BigData(size_t i) { memset(this, (int)i, sizeof(BigData)); }
@@ -58,7 +59,7 @@ int main(int argc, char*argv[]) {
 			
 			clock_t mt2read_t0 = clock();
 			for (size_t i = 0; i < insertion_count; i++) {
-				auto v = mt2[i];
+                mt2.find(i);
 			}
 			clock_t mt2read_t1 = clock();
 

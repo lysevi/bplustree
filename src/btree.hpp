@@ -194,9 +194,9 @@ namespace trees{
 		auto pos_half = node->vals.begin() + pos_half_index;
 
 		if (C->is_leaf) {
-			C->vals=Node::value_vector(pos_half, node->vals.end());
+            C->vals=typename Node::value_vector(pos_half, node->vals.end());
 		} else {
-			C->vals = Node::value_vector(pos_half + 1, node->vals.end());
+            C->vals = typename Node::value_vector(pos_half + 1, node->vals.end());
 		}
 				
         node->vals.erase(pos_half , node->vals.end());

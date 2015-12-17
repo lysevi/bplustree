@@ -84,7 +84,7 @@ BOOST_AUTO_TEST_CASE(BtreeTest) {
 BOOST_AUTO_TEST_CASE(QueryRange) {
 	size_t insertion_count = 100;
 	trees::BTree<size_t, size_t> t(3);
-	clock_t read_t0 = clock();
+
 	for (size_t i = 0; i < insertion_count; i++) {
 		t.insert(i, i);
 	}
