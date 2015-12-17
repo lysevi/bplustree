@@ -165,21 +165,23 @@ namespace trees{
 	template<class Key, class Value>
 	void BTree<Key, Value>::split_node(typename BTree<Key, Value>::Node::Ptr node) {
 		auto C = this->make_node();
-		C->vals = node->vals;
-
-		auto midle = C->vals[(C->vals.size() / 2)];
-		auto pos_half = C->vals.begin() + (C->vals.size() / 2);
-		C->vals.erase(C->vals.begin(), pos_half);
 		C->is_leaf = node->is_leaf;
 
-		pos_half = node->vals.begin() + (node->vals.size() / 2);
+		auto pos_half_index = (node->vals.size() / 2);
+		auto midle = node->vals[pos_half_index];
+		auto pos_half = node->vals.begin() + pos_half_index;
+
+		if (C->is_leaf) {
+			C->vals=Node::value_vector(pos_half, node->vals.end());
+		} else {
+			C->vals = Node::value_vector(pos_half + 1, node->vals.end());
+		}
+				
         node->vals.erase(pos_half , node->vals.end());
 		auto tmp = node->next;
 		node->next = C;
 		C->next = tmp;
-		if (!C->is_leaf) {
-			C->vals.erase(C->vals.begin(), C->vals.begin() + 1);
-		}
+		
 		if (node->childs.size() > 0) {
 			size_t new_count = 0;
 			size_t old_count = 0;

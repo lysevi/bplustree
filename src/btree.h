@@ -17,7 +17,8 @@ namespace trees
 		{
 			typedef std::shared_ptr<Node> Ptr;
 			typedef std::weak_ptr<Node> Weak;
-			std::vector<std::pair<Key,Value>> vals;       // n >= size < 2*n
+			typedef std::vector<std::pair<Key, Value>> value_vector;
+			value_vector vals;       // n >= size < 2*n
 			std::vector<Ptr> childs;   // size(vals)+1
 			bool is_leaf;
 
