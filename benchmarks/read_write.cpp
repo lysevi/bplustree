@@ -1,7 +1,7 @@
 #include <btree.h>
 #include <ctime>
 #include <sstream>
-
+#include <map>
 struct BigData
 {
 	BigData(size_t i) { memset(this, (int)i, sizeof(BigData)); }
@@ -33,7 +33,16 @@ int main(int argc, char*argv[]) {
 			t2.insert(i, BigData(i));
 		}
 		clock_t read_t1 = clock();
-		std::cout << " :" << " time: " << ((float)read_t1 - read_t0) / CLOCKS_PER_SEC << std::endl;
+
+		std::map<size_t, BigData> mt2{};
+		clock_t mt2read_t0 = clock();
+		for (size_t i = 0; i < insertion_count; i++) {
+			mt2[i]=BigData(i);
+		}
+		clock_t mt2read_t1 = clock();
+
+		std::cout << " :" << " time: " << ((float)read_t1 - read_t0) / CLOCKS_PER_SEC
+			<<" map time:"<< ((float)mt2read_t1 - mt2read_t0) / CLOCKS_PER_SEC << std::endl;
 	}
 	
 	/*trees::BTree<size_t, size_t> t(3);
