@@ -58,18 +58,6 @@ namespace trees{
 		} else {
 			this->childs.push_back(C);
 		}
-
-		/*for (size_t i = 0; i < this->vals.size(); ++i) {
-			if (this->vals[i].first == key) {
-				auto pos = this->childs.begin() + i;
-				if (pos == this->childs.end()) {
-					this->childs.push_back(C);
-				} else {
-					this->childs.insert(pos + 1, C);
-				}
-				return;
-			}
-		}*/
 		assert(false);
 	}
 	
