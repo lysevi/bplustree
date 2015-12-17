@@ -79,17 +79,56 @@ BOOST_AUTO_TEST_CASE(BtreeTest) {
             BOOST_FAIL(ss.str());
 		}
     }
+}
 
-	/*auto start_node_w=t.find_node(-11);
-	auto stop_node_w = t.find_node(300);
+BOOST_AUTO_TEST_CASE(QueryRange) {
+	size_t insertion_count = 100;
+	trees::BTree<size_t, size_t> t(3);
+	clock_t read_t0 = clock();
+	for (size_t i = 0; i < insertion_count; i++) {
+		t.insert(i, i);
+	}
+
+	auto start_node_w = t.find_node(0);
+	auto stop_node_w = t.find_node(insertion_count * 2);
 	auto start_node = start_node_w.lock();
 	auto stop_node = stop_node_w.lock();
+
+	size_t prev_key{};
+	bool first = true;
 	while (start_node != stop_node) {
 		for (size_t i = 0; i < start_node->vals.size(); i++) {
-			std::cout << " " << start_node->vals[i].first;
+			auto current_key = start_node->vals[i].first;
+			if (first) {
+				prev_key = current_key;
+				first = false;
+			} else {
+				BOOST_CHECK_EQUAL(current_key - 1, prev_key);
+				prev_key = current_key;
+			}
 		}
 		start_node = start_node->next.lock();
-	}*/
-	
-
+	}
 }
+
+
+//BOOST_AUTO_TEST_CASE(OneKeyManyValues) {
+//	size_t insertion_count = 100;
+//	trees::BTree<size_t, size_t> t(3);
+//	clock_t read_t0 = clock();
+//	for (size_t i = 0; i < insertion_count; i++) {
+//		t.insert(10, i);
+//	}
+//
+//	auto start_node_w = t.find_node(0);
+//	auto stop_node_w = t.find_node(insertion_count * 2);
+//	auto start_node = start_node_w.lock();
+//	auto stop_node = stop_node_w.lock();
+//	while (start_node != stop_node) {
+//		for (size_t i = 0; i < start_node->vals.size(); i++) {
+//			insertion_count--;
+//		}
+//		start_node = start_node->next.lock();
+//	}
+//	BOOST_CHECK_EQUAL(insertion_count, 0);
+//}
