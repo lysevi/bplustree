@@ -48,7 +48,18 @@ namespace trees{
 			this->childs.push_back(C);
 			return;
 		}
-		for (size_t i = 0; i < this->vals.size(); ++i) {
+		auto kv = std::make_pair(key, Value{});
+		auto lb_iter = std::lower_bound(this->vals.begin(), this->vals.end(), kv,
+										[](const std::pair<Key, Value> &l, const std::pair<Key, Value> &r){return l.first < r.first; });
+		if (lb_iter != this->vals.end()) {
+			auto pos = this->childs.begin() + std::distance(this->vals.begin(), lb_iter);
+			this->childs.insert(pos + 1, C);
+			return;
+		} else {
+			this->childs.push_back(C);
+		}
+
+		/*for (size_t i = 0; i < this->vals.size(); ++i) {
 			if (this->vals[i].first == key) {
 				auto pos = this->childs.begin() + i;
 				if (pos == this->childs.end()) {
@@ -58,7 +69,7 @@ namespace trees{
 				}
 				return;
 			}
-		}
+		}*/
 		assert(false);
 	}
 	
