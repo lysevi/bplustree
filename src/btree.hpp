@@ -155,7 +155,7 @@ namespace trees{
 	template<class Key, class Value>
 	bool BTree<Key, Value>::insert(Key key, Value val) {
         typename Node::Ptr node = nullptr;
-		Key res;
+		Value res;
 		this->iner_find(key, m_root, node, res);
 		assert(node != nullptr);
 		if (!isFull(node)) {

@@ -2,6 +2,16 @@
 #include <ctime>
 #include <sstream>
 
+struct BigData
+{
+	BigData(size_t i) { memset(this, (int)i, sizeof(BigData)); }
+	BigData() = default;
+	uint64_t id;
+	uint64_t time;
+	uint64_t flag;
+	uint64_t value;
+};
+
 int main(int argc, char*argv[]) {
 	std::cout << "usage: " << argv[0] << " [insertion_count] [max N]" << std::endl;
 	size_t insertion_count = 100000;
@@ -17,10 +27,10 @@ int main(int argc, char*argv[]) {
 	for (size_t N = 3; N < max_N; N++) {
 		std::cout << "N=" << N;
 
-		trees::BTree<size_t, size_t> t2(N);
+		trees::BTree<size_t, BigData> t2(N);
 		clock_t read_t0 = clock();
 		for (size_t i = 0; i < insertion_count; i++) {
-			t2.insert(i, i);
+			t2.insert(i, BigData(i));
 		}
 		clock_t read_t1 = clock();
 		std::cout << " :" << " time: " << ((float)read_t1 - read_t0) / CLOCKS_PER_SEC << std::endl;
