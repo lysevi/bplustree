@@ -91,7 +91,7 @@ namespace trees{
 	template<class Key, class Value>
 	Value BTree<Key, Value>::find(Key key)const {
         typename Node::Ptr node = m_root;
-		int res;
+		Value res;
 		if (this->iner_find(key, m_root, node, res)) {
 			assert(node != nullptr);
 			return res;

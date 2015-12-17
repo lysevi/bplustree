@@ -23,44 +23,48 @@ int main(int argc, char*argv[]) {
 	if (argc > 2) {
 		std::istringstream(argv[2]) >> max_N;
 	}
-	std::cout << "insertion: " << insertion_count<<std::endl;
+	std::cout << "insertion: " << insertion_count << std::endl;
 	for (size_t N = 3; N < max_N; N++) {
 		std::cout << "N=" << N;
-
 		trees::BTree<size_t, BigData> t2(N);
-		clock_t read_t0 = clock();
-		for (size_t i = 0; i < insertion_count; i++) {
-			t2.insert(i, BigData(i));
-		}
-		clock_t read_t1 = clock();
-
 		std::map<size_t, BigData> mt2{};
-		clock_t mt2read_t0 = clock();
-		for (size_t i = 0; i < insertion_count; i++) {
-			mt2[i]=BigData(i);
+		//write
+		{
+
+			clock_t read_t0 = clock();
+			for (size_t i = 0; i < insertion_count; i++) {
+				t2.insert(i, BigData(i));
+			}
+			clock_t read_t1 = clock();
+
+
+			clock_t mt2read_t0 = clock();
+			for (size_t i = 0; i < insertion_count; i++) {
+				mt2[i] = BigData(i);
+			}
+			clock_t mt2read_t1 = clock();
+
+			std::cout << " w:" << " time: " << ((float)read_t1 - read_t0) / CLOCKS_PER_SEC
+				<< " map time:" << ((float)mt2read_t1 - mt2read_t0) / CLOCKS_PER_SEC << std::endl;
 		}
-		clock_t mt2read_t1 = clock();
+		//read
+		{
+			trees::BTree<size_t, BigData> t2(N);
+			clock_t read_t0 = clock();
+			for (size_t i = 0; i < insertion_count; i++) {
+				t2.find(i);
+			}
+			clock_t read_t1 = clock();
 
-		std::cout << " :" << " time: " << ((float)read_t1 - read_t0) / CLOCKS_PER_SEC
-			<<" map time:"<< ((float)mt2read_t1 - mt2read_t0) / CLOCKS_PER_SEC << std::endl;
-	}
-	
-	/*trees::BTree<size_t, size_t> t(3);
-	clock_t read_t0 = clock();
-	for (size_t i = 0; i < insertion_count; i++) {
-		t.insert(10, i);
-	}
+			std::map<size_t, BigData> mt2{};
+			clock_t mt2read_t0 = clock();
+			for (size_t i = 0; i < insertion_count; i++) {
+				auto v = mt2[i];
+			}
+			clock_t mt2read_t1 = clock();
 
-	auto start_node_w = t.find_node(0);
-	auto stop_node_w = t.find_node(insertion_count*2);
-	auto start_node = start_node_w.lock();
-	auto stop_node = stop_node_w.lock();
-	while (start_node != stop_node) {
-		for (size_t i = 0; i < start_node->vals.size(); i++) {
-			std::cout << " " << start_node->vals[i].first;
+			std::cout << " r:" << " time: " << ((float)read_t1 - read_t0) / CLOCKS_PER_SEC
+				<< " map time:" << ((float)mt2read_t1 - mt2read_t0) / CLOCKS_PER_SEC << std::endl;
 		}
-		start_node = start_node->next.lock();
 	}
-	std::cout << std::endl;*/
-
 }
