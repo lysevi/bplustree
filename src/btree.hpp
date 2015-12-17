@@ -186,6 +186,9 @@ namespace trees{
 		auto tmp = node->next;
 		node->next = C;
 		C->next = tmp;
+		if (!C->is_leaf) {
+			C->vals.erase(C->vals.begin(), C->vals.begin() + 1);
+		}
 		if (node->childs.size() > 0) {
             std::vector<typename Node::Ptr> new_childs;
             std::vector<typename Node::Ptr> old_childs;
@@ -218,9 +221,7 @@ namespace trees{
 			node2insert = this->make_node();
 			m_root->parent = node2insert;
 			m_root = node2insert;
-            if(!C->is_leaf){
-                C->vals.erase(C->vals.begin(),C->vals.begin()+1);
-            }
+          
 			node2insert->insertValue(midle.first, midle.second);
 			node2insert->childs.push_back(node);
 			node2insert->childs.push_back(C);
