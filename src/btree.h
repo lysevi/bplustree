@@ -9,16 +9,36 @@
 namespace trees
 {
 
+
 	template<typename  Key, typename  Value>
 	class BTree
 	{
 	public:
+        struct node_data: std::pair<Key, Value>{
+            node_data()=default;
+
+            node_data(const Key&k,const Value&v){
+                this->first=k;
+                this->second=v;
+            }
+
+            bool operator==(const node_data&other){
+                return this->first==other.first;
+            }
+            bool operator<=(const node_data&other){
+                return this->first<=other.first;
+            }
+            bool operator>(const node_data&other){
+                return this->first>other.first;
+            }
+        };
+
 		struct Node
 		{
 			typedef std::shared_ptr<Node> Ptr;
 			typedef std::weak_ptr<Node> Weak;
-			typedef std::vector<std::pair<Key, Value>> value_vector;
-			value_vector vals;       // n >= size < 2*n
+            typedef std::vector<node_data> value_vector;
+            value_vector vals;       // n >= size < 2*n
 			std::vector<Ptr> childs;   // size(vals)+1
 			bool is_leaf;
 

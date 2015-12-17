@@ -21,7 +21,7 @@ namespace trees{
 
 	template<class Key, class Value>
 	void BTree<Key, Value>::Node::insertValue(Key key, Value val) {
-		auto kv = std::make_pair(key,val);
+        auto kv = node_data(key,val);
 		if (vals.size() == 0) {
 			vals.push_back(kv);
 			return;
