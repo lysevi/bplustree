@@ -127,8 +127,8 @@ namespace trees{
 			}
 		}
 
-        if (key < cur_node->vals.front().first) {
-            return iner_find(key, cur_node->childs.front(), out_ptr, out_res);
+        if (key < cur_node->vals[0].first) {
+            return iner_find(key, cur_node->childs[0], out_ptr, out_res);
         }
 
         for (size_t i = 0; i < cur_node->vals.size()-1; i++) {
@@ -193,7 +193,7 @@ namespace trees{
 			size_t new_count = 0;
 			size_t old_count = 0;
 			for (auto c : node->childs) {
-				if (c->vals.front().first >= midle.first) {
+				if (c->vals[0].first >= midle.first) {
 					new_count++;
 				} else {
 					old_count++;
@@ -203,7 +203,7 @@ namespace trees{
 			std::vector<typename Node::Ptr> old_childs{ old_count };
 			new_count = old_count = 0;
 			for (auto c : node->childs) {
-                if (c->vals.front().first >= midle.first) {
+                if (c->vals[0].first >= midle.first) {
 					new_childs[new_count++]=c;
 				} else {
 					old_childs[old_count++] = c;
