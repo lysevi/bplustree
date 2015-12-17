@@ -91,11 +91,5 @@ BOOST_AUTO_TEST_CASE(BtreeTest) {
 		start_node = start_node->next.lock();
 	}*/
 	
-	trees::BTree<int, int> t2(10);
-	clock_t read_t0 = clock();
-	for (int i = 0; i < 100000; i++) {
-		t2.insert(i,i);
-	}
-	clock_t read_t1 = clock();
-	std::cout<<"=> :" << " time: " << ((float)read_t1 - read_t0) / CLOCKS_PER_SEC<<std::endl;
+
 }
