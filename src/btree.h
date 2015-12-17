@@ -24,7 +24,7 @@ namespace trees
 			typename Node::Weak parent;
 			typename Node::Weak next;
 			Node();
-			Node(int cap);
+			Node(size_t cap);
 			~Node();
 			void insertValue(Key key,Value val);
 			void insertChild(Key key, typename Node::Ptr C);
@@ -37,7 +37,7 @@ namespace trees
 
 		Value find(Key key)const;
 		typename Node::Weak  find_node(Key key)const;
-		bool insert(Key key, Value val); //true if key was inserted. false, if not (maybe she alrady exists)
+		bool insert(Key key, Value val); 
 		void print()const;
 	protected:
 		typename Node::Ptr make_node();

@@ -7,7 +7,7 @@ namespace trees{
 	}
 
 	template<class Key, class Value>
-	BTree<Key,Value>::Node::Node(int cap) {
+	BTree<Key, Value>::Node::Node(size_t cap) {
 		is_leaf = false;
 		this->childs.reserve(cap);
 		this->vals.reserve(cap);
@@ -102,7 +102,7 @@ namespace trees{
 	template<class Key, class Value>
 	typename BTree<Key, Value>::Node::Weak  BTree<Key, Value>::find_node(Key key)const {
         typename Node::Ptr node = m_root;
-		int res;
+		Key res;
 		this->iner_find(key, m_root, node, res);
 		return node;
 	}
@@ -131,9 +131,6 @@ namespace trees{
 
         for (size_t i = 0; i < cur_node->vals.size()-1; i++) {
             auto cur=cur_node->vals[i].first;
-//            if(cur==key){
-//                return iner_find(key, cur_node->childs[i], out_ptr, out_res);
-//            }
             auto nxt=cur_node->vals[i+1].first;
 
             if((cur<=key) && ((key<nxt))){
@@ -158,7 +155,7 @@ namespace trees{
 	template<class Key, class Value>
 	bool BTree<Key, Value>::insert(Key key, Value val) {
         typename Node::Ptr node = nullptr;
-		int res;
+		Key res;
 		this->iner_find(key, m_root, node, res);
 		assert(node != nullptr);
 		if (!isFull(node)) {
