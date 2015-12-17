@@ -33,17 +33,19 @@ namespace trees{
 		}
 
 		int step = 0;
-        typename std::vector<std::pair<Key, Value>>::iterator prev_it;
-		for (auto it = this->vals.begin(); it != this->vals.end(); ++it) {
+		Key prev_it;
+		for (int  i = 0; i < this->vals.size(); ++i) {
+			auto cur_item = this->vals[i];
 			if (step != 0) {
-				auto cur = *it;
-				auto prev = *prev_it;
-				if ((key < cur.first) && (key > prev.first)) {
+				auto cur = cur_item.first;
+				auto prev = prev_it;
+				if ((key < cur) && (key > prev)) {
+					auto it = this->vals.begin() + i;
 					this->vals.insert(it, kv);
 					return;
 				}
 			}
-			prev_it = it;
+			prev_it = cur_item.first;
 			step += 1;
 		}
 
@@ -139,8 +141,9 @@ namespace trees{
 		}
 
 		if ((cur_node->childs.size() != 0) && (cur_node->vals.size() != 0)) {
-			if (key >= cur_node->vals.back().first) {
-				return iner_find(key, cur_node->childs.back(), out_ptr, out_res);
+			if (key >= cur_node->vals[cur_node->vals.size()-1].first) {
+				auto last = cur_node->childs[cur_node->childs.size()-1];
+				return iner_find(key, last, out_ptr, out_res);
 			}
         }
 
