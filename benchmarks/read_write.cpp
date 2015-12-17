@@ -49,14 +49,13 @@ int main(int argc, char*argv[]) {
 		}
 		//read
 		{
-			trees::BTree<size_t, BigData> t2(N);
 			clock_t read_t0 = clock();
 			for (size_t i = 0; i < insertion_count; i++) {
 				t2.find(i);
 			}
 			clock_t read_t1 = clock();
 
-			std::map<size_t, BigData> mt2{};
+			
 			clock_t mt2read_t0 = clock();
 			for (size_t i = 0; i < insertion_count; i++) {
 				auto v = mt2[i];
