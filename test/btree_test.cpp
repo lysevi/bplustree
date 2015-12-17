@@ -120,10 +120,10 @@ BOOST_AUTO_TEST_CASE(ArrayFuncs) {
         trees::insert_to_array(t1, 5 ,1,2);
 
         for(size_t i=0;i<5;i++){
-            auto v1=t1[i];
-            auto v2=t2[i];
+//            auto v1=t1[i];
+//            auto v2=t2[i];
             BOOST_CHECK_EQUAL(t1[i],t2[i]);
-            std::cout<<" "<<v1<<" "<<v2<<std::endl;
+            //std::cout<<" "<<v1<<" "<<v2<<std::endl;
         }
     }
 
@@ -134,10 +134,23 @@ BOOST_AUTO_TEST_CASE(ArrayFuncs) {
         trees::insert_to_array(t1, 5 ,0,2);
 
         for(size_t i=0;i<5;i++){
-            auto v1=t1[i];
-            auto v2=t2[i];
+//            auto v1=t1[i];
+//            auto v2=t2[i];
             BOOST_CHECK_EQUAL(t1[i],t2[i]);
-            std::cout<<" "<<v1<<" "<<v2<<std::endl;
+            //std::cout<<" "<<v1<<" "<<v2<<std::endl;
+        }
+    }
+    {
+        int t1[5]={1,2,3,4,0};
+        int t2[5]={1,2,3,4,2};
+
+        trees::insert_to_array(t1, 5 ,4,2);
+
+        for(size_t i=0;i<5;i++){
+//            auto v1=t1[i];
+//            auto v2=t2[i];
+            BOOST_CHECK_EQUAL(t1[i],t2[i]);
+            //std::cout<<" "<<v1<<" "<<v2<<std::endl;
         }
     }
 }
