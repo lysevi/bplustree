@@ -35,14 +35,15 @@ namespace trees
 
 		struct Node
 		{
-			typedef std::shared_ptr<Node> Ptr;
-			typedef std::weak_ptr<Node> Weak;
+            typedef Node*  Ptr;
+            typedef size_t Weak;
             typedef std::vector<node_data> value_vector;
-			typedef std::vector<Ptr> child_vector;
+            typedef std::vector<Weak> child_vector;
             value_vector vals;       // n >= size < 2*n
 			size_t vals_size;
 			child_vector childs;   // size(vals)+1
 			size_t childs_size;
+            size_t id;
 			bool is_leaf;
 
 			typename Node::Weak parent;
@@ -60,17 +61,21 @@ namespace trees
 		~BTree();
 
 		Value find(Key key)const;
-		typename Node::Weak  find_node(Key key)const;
+        typename Node::Ptr  find_node(Key key)const;
 		bool insert(Key key, Value val); 
 		void print()const;
+        std::vector<Node> *cache;
+
 	protected:
-		typename Node::Ptr make_node();
+        std::pair<typename Node::Ptr,typename Node::Weak> make_node();
 		bool iner_find(Key key, typename Node::Ptr cur_node, typename Node::Ptr&out_ptr, Value &out_res)const; // return last_node, false if fail, or cur_node,true;
 		bool isFull(const typename Node::Ptr node)const;
 		void split_node(typename Node::Ptr node);
 		void print(const typename Node::Ptr& root)const;
 	private:
 		size_t n;
+
+        size_t cache_pos;
 		typename Node::Ptr m_root;
 	};
 }

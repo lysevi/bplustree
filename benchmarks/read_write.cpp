@@ -15,7 +15,7 @@ struct BigData
 
 int main(int argc, char*argv[]) {
 	size_t insertion_count = 100000;
-	size_t max_N = 30;
+    size_t max_N = 100;
 
 	std::cout << "usage: " << argv[0] << " [insertion_count ("<<insertion_count<<")] [max N ("<<max_N<<")]" << std::endl;
 	
@@ -27,7 +27,7 @@ int main(int argc, char*argv[]) {
 		std::istringstream(argv[2]) >> max_N;
 	}
 	std::cout << "insertion: " << insertion_count << std::endl;
-	for (size_t N = 3; N < max_N; N++) {
+    for (size_t N = 50; N < max_N; N++) {
 		std::cout << "N=" << N;
 		trees::BTree<size_t, BigData> t2(N);
 		std::map<size_t, BigData> mt2{};

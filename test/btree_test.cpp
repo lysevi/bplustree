@@ -89,10 +89,8 @@ BOOST_AUTO_TEST_CASE(QueryRange) {
 		t.insert(i, i);
 	}
 
-	auto start_node_w = t.find_node(0);
-	auto stop_node_w = t.find_node(insertion_count * 2);
-	auto start_node = start_node_w.lock();
-	auto stop_node = stop_node_w.lock();
+    auto start_node = t.find_node(0);
+    auto stop_node = t.find_node(insertion_count * 2);
 
 	size_t prev_key{};
 	bool first = true;
@@ -107,7 +105,7 @@ BOOST_AUTO_TEST_CASE(QueryRange) {
 				prev_key = current_key;
 			}
 		}
-		start_node = start_node->next.lock();
+        start_node = &(*t.cache)[start_node->next];
 	}
 }
 

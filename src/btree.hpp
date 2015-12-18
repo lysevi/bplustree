@@ -2,18 +2,25 @@
 namespace trees{
 
 	template<class Key, class Value>
-	BTree<Key,Value>::Node::Node() {
+    BTree<Key,Value>::Node::Node() {
 		is_leaf = false;
 		vals_size = 0;
+        childs_size=0;
+        id=0;
+        parent=0;
+        next=0;
 	}
 
 	template<class Key, class Value>
-	BTree<Key, Value>::Node::Node(size_t cap) {
+    BTree<Key, Value>::Node::Node(size_t cap){
 		is_leaf = false;
         this->childs.resize(cap+1);
         this->vals.resize(cap+1);
-		vals_size = 0;
-		childs_size = 0;
+        vals_size = 0;
+        childs_size=0;
+        id=0;
+        parent=0;
+        next=0;
 	}
 	
 	template<class Key, class Value>
@@ -54,7 +61,7 @@ namespace trees{
 	void BTree<Key, Value>::Node::insertChild(Key key, typename Node::Ptr C) {
 		if (key == this->vals.back().first) {
 			//this->childs.resize(this->childs.size() + 1);
-			this->childs[childs_size]=C;
+            this->childs[childs_size]=C->id;
 			childs_size++;
 			return;
 		}
@@ -63,30 +70,43 @@ namespace trees{
 										[](const std::pair<Key, Value> &l, const std::pair<Key, Value> &r){return l.first < r.first; });
 		if (lb_iter != this->vals.data() + vals_size) {
 			auto d = std::distance(this->vals.data(), lb_iter);
-			insert_to_array(this->childs.data(), childs_size+1, d+1, C);
+            insert_to_array(this->childs.data(), childs_size+1, d+1, C->id);
 			childs_size++;
 			return;
 		} else {
-			this->childs[childs_size] = C;
+            this->childs[childs_size] = C->id;
 			childs_size++;
 		}
 		assert(false);
 	}
 	
 	template<class Key, class Value>
-    BTree<Key,Value>::BTree(size_t N) :n(N) {
-		m_root = BTree<Key,Value>::make_node();
+    BTree<Key,Value>::BTree(size_t N):n(N) {
+        cache=new std::vector<Node>(3000);
+        for(size_t i=0;i<cache->size();i++){
+            (*cache)[i]=Node(this->n*2);
+        }
+        cache_pos=1;
+        m_root = BTree<Key,Value>::make_node().first;
 		m_root->is_leaf = true;
+
 	}
 	
 	template<class Key, class Value>
     BTree<Key,Value>::~BTree() {
 		m_root = nullptr;
+        this->cache->clear();
+        delete this->cache;
 	}
 
 	template<class Key, class Value>
-	typename BTree<Key, Value>::Node::Ptr BTree<Key, Value>::make_node() {
-		return std::make_shared<typename BTree<Key, Value>::Node>(this->n*2);
+    std::pair<typename BTree<Key, Value>::Node::Ptr,typename BTree<Key, Value>::Node::Weak> BTree<Key, Value>::make_node() {
+        auto ptr=&(*cache)[cache_pos];
+        //(*cache)[cache_pos]=ptr;
+        ptr->id=cache_pos;
+        auto pos=cache_pos;
+        cache_pos++;
+        return std::make_pair(ptr,pos);
 	}
 
 	template<class Key, class Value>
@@ -103,7 +123,7 @@ namespace trees{
 	}
 
 	template<class Key, class Value>
-	typename BTree<Key, Value>::Node::Weak  BTree<Key, Value>::find_node(Key key)const {
+    typename BTree<Key, Value>::Node::Ptr  BTree<Key, Value>::find_node(Key key)const {
         typename Node::Ptr node = m_root;
 		Key res;
 		this->iner_find(key, m_root, node, res);
@@ -130,14 +150,14 @@ namespace trees{
 
          //case k < k_0
         if (key < cur_node->vals[0].first) {
-            return iner_find(key, cur_node->childs[0], out_ptr, out_res);
+            return iner_find(key, &(*cache)[cur_node->childs[0]], out_ptr, out_res);
         }
 
          //case k_d ≤ k
         if ((cur_node->childs_size != 0) && (cur_node->vals_size != 0)) {
             if (key >= cur_node->vals[cur_node->vals_size - 1].first) {
                 auto last = cur_node->childs[cur_node->childs_size - 1];
-                return iner_find(key, last, out_ptr, out_res);
+                return iner_find(key, &(*cache)[last], out_ptr, out_res);
             }
         }
 
@@ -158,7 +178,7 @@ namespace trees{
         }
         if (key < nxt_it->first) {
             auto d = std::distance(cur_node->vals.data(), low_bound);
-            return iner_find(key, cur_node->childs[d+1], out_ptr, out_res);
+            return iner_find(key, &(*cache)[cur_node->childs[d+1]], out_ptr, out_res);
         }
 
 		return false;
@@ -187,7 +207,8 @@ namespace trees{
 
 	template<class Key, class Value>
 	void BTree<Key, Value>::split_node(typename BTree<Key, Value>::Node::Ptr node) {
-		auto C = this->make_node();
+        auto C_rec=this->make_node();
+        auto C = C_rec.first;
 		C->is_leaf = node->is_leaf;
 
 		auto pos_half_index = (node->vals_size / 2);
@@ -207,59 +228,49 @@ namespace trees{
 
 		node->vals_size = pos_half_index;
 		auto tmp = node->next;
-		node->next = C;
+        node->next = C_rec.second;
 		C->next = tmp;
 		
 		if (node->childs_size > 0) {
             size_t new_count = node->childs_size/2;
             size_t old_count = node->childs_size/2;
 
-            std::vector<typename Node::Ptr> new_childs{ n*2 };
-            std::vector<typename Node::Ptr> old_childs{ n*2 };
-			new_count = old_count = 0;
-			for(size_t i=0;i<node->childs_size;i++){
-				auto ch = node->childs[i];
-                if (ch->vals[0].first >= midle.first) {
-					new_childs[new_count++]=ch;
-				} else {
-					old_childs[old_count++] = ch;
-				}
-			}
-
-
-			C->childs_size = new_count;
+            C->childs_size = new_count;
             size_t pos=0;
             for (size_t i = old_count; i<node->childs_size; i++) {
-                auto ch = node->childs[i];
-				ch->parent = C;
-                C->childs[pos++]=ch;
+                auto ch_ind = node->childs[i];
+                auto ch = &(*cache)[ch_ind];
+                ch->parent = C_rec.second;
+                C->childs[pos++]=ch_ind;
 			}
             for(size_t i=old_count;i<node->childs_size;i++){
-                node->childs[i]=nullptr;
+                node->childs[i]=0;
             }
 
             node->childs_size = old_count;
 		}
         typename Node::Ptr node2insert = nullptr;
 
-		if (auto parent = node->parent.lock()) {
-			node2insert = parent;
+        auto parent_ind= node->parent;
+        if (parent_ind!=0) {
+            node2insert = &(*cache)[parent_ind];
 			node2insert->insertValue(midle.first,midle.second);
 
 			node2insert->insertChild(midle.first, C);
 			C->parent = node->parent;
 		} else {
-			node2insert = this->make_node();
-			m_root->parent = node2insert;
+            auto node2insert_rec = this->make_node();
+            node2insert = node2insert_rec.first;
+            m_root->parent = node2insert_rec.second;
 			m_root = node2insert;
           
 			node2insert->insertValue(midle.first, midle.second);
-			node2insert->childs[node2insert->childs_size]=(node);
+            node2insert->childs[node2insert->childs_size]=(node->id);
 			node2insert->childs_size++;
-			node2insert->childs[node2insert->childs_size] = (C);
+            node2insert->childs[node2insert->childs_size] = (C->id);
 			node2insert->childs_size++;
-			node->parent = m_root;
-			C->parent = m_root;
+            node->parent = m_root->id;
+            C->parent = m_root->id;
 		}
 
 		if (isFull(node2insert)) {
