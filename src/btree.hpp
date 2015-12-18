@@ -30,7 +30,7 @@ namespace trees{
 			vals[0]=kv;
 			return;
 		} else {
-			if (vals.begin()->first > key) {
+			if (vals.data()->first > key) {
 				vals.resize(vals.size() + 1);
 				vals_size++;
 				insert_to_array(vals.data(), vals_size, 0, kv);
@@ -38,10 +38,10 @@ namespace trees{
 			}
 		}
 
-		auto lb_iter = std::lower_bound(this->vals.begin(), this->vals.begin() + vals_size, kv,
+		auto lb_iter = std::lower_bound(this->vals.data(), this->vals.data() + vals_size, kv,
 										[](const std::pair<Key, Value> &l, const std::pair<Key, Value> &r){return l.first < r.first; });
-		if (lb_iter != this->vals.begin()+vals_size) {
-			auto d = std::distance(vals.begin(), lb_iter);
+		if (lb_iter != this->vals.data()+vals_size) {
+			auto d = std::distance(vals.data(), lb_iter);
 			vals.resize(vals.size() + 1);
 			vals_size++;
 			insert_to_array(vals.data(), vals.size(), d, kv);
@@ -60,10 +60,10 @@ namespace trees{
 			return;
 		}
 		auto kv = std::make_pair(key, Value{});
-		auto lb_iter = std::lower_bound(this->vals.begin(), vals.begin() + vals_size, kv,
+		auto lb_iter = std::lower_bound(this->vals.data(), vals.data() + vals_size, kv,
 										[](const std::pair<Key, Value> &l, const std::pair<Key, Value> &r){return l.first < r.first; });
-		if (lb_iter != this->vals.begin() + vals_size) {
-			auto pos = this->childs.begin() + std::distance(this->vals.begin(), lb_iter);
+		if (lb_iter != this->vals.data() + vals_size) {
+			auto pos = this->childs.begin() + std::distance(this->vals.data(), lb_iter);
 			this->childs.insert(pos + 1, C);
 			return;
 		} else {
@@ -112,13 +112,13 @@ namespace trees{
 	template<class Key, class Value>
 	bool BTree<Key, Value>::iner_find(Key key, typename Node::Ptr cur_node, typename Node::Ptr&out_ptr, Value &out_res)const {
 		if (cur_node->is_leaf) {
-			auto find_res = std::lower_bound(cur_node->vals.begin(), cur_node->vals.begin() + cur_node->vals_size, std::make_pair(key, Value()),
+			auto find_res = std::lower_bound(cur_node->vals.data(), cur_node->vals.data() + cur_node->vals_size, std::make_pair(key, Value()),
 										   [key](const std::pair<Key, Value> &v, const std::pair<Key, Value> &v2) {
 				return (v.first < v2.first);
 									});
 
 			out_ptr = cur_node;
-			if (find_res != cur_node->vals.begin() + cur_node->vals_size) {
+			if (find_res != cur_node->vals.data() + cur_node->vals_size) {
 				out_res = find_res->second;
 				return true;
 			}
@@ -146,7 +146,7 @@ namespace trees{
             //if((cur<=key) && ((key<nxt)))
 			{
 				auto kv = std::make_pair(key, Value());
-				auto low_bound = std::lower_bound(cur_node->vals.begin(), cur_node->vals.begin() + cur_node->vals_size, kv,
+				auto low_bound = std::lower_bound(cur_node->vals.data(), cur_node->vals.data() + cur_node->vals_size, kv,
 												  [key](const std::pair<Key, Value> &v, const std::pair<Key, Value> &v2) {
 					return (v.first < v2.first);
 				});
@@ -160,7 +160,7 @@ namespace trees{
 						nxt_it--;
 					}
 					if (key < nxt_it->first) {
-						auto d = std::distance(cur_node->vals.begin(), low_bound);
+						auto d = std::distance(cur_node->vals.data(), low_bound);
 						return iner_find(key, cur_node->childs[d+1], out_ptr, out_res);
 					}
 					
