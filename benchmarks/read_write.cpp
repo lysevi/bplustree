@@ -14,9 +14,11 @@ struct BigData
 };
 
 int main(int argc, char*argv[]) {
-	std::cout << "usage: " << argv[0] << " [insertion_count] [max N]" << std::endl;
 	size_t insertion_count = 100000;
-	size_t max_N = 10;
+	size_t max_N = 30;
+
+	std::cout << "usage: " << argv[0] << " [insertion_count ("<<insertion_count<<")] [max N ("<<max_N<<")]" << std::endl;
+	
 	if (argc > 1) {
 		std::istringstream(argv[1]) >> insertion_count;
 	}
