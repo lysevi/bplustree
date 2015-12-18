@@ -11,7 +11,7 @@ namespace trees{
 	BTree<Key, Value>::Node::Node(size_t cap) {
 		is_leaf = false;
         this->childs.reserve(cap+1);
-        this->vals.reserve(cap+1);
+        this->vals.resize(cap+1);
 		vals_size = 0;
 	}
 	
@@ -24,14 +24,12 @@ namespace trees{
 	template<class Key, class Value>
 	void BTree<Key, Value>::Node::insertValue(Key key, Value val) {
         auto kv = node_data(key,val);
-		if (vals.size() == 0) {
-			vals.resize(1);
+		if (vals_size == 0) {
 			vals_size++;
 			vals[0]=kv;
 			return;
 		} else {
 			if (vals.data()->first > key) {
-				vals.resize(vals.size() + 1);
 				vals_size++;
 				insert_to_array(vals.data(), vals_size, 0, kv);
 				return;
@@ -42,13 +40,11 @@ namespace trees{
 										[](const std::pair<Key, Value> &l, const std::pair<Key, Value> &r){return l.first < r.first; });
 		if (lb_iter != this->vals.data()+vals_size) {
 			auto d = std::distance(vals.data(), lb_iter);
-			vals.resize(vals.size() + 1);
 			vals_size++;
-			insert_to_array(vals.data(), vals.size(), d, kv);
+			insert_to_array(vals.data(), vals_size, d, kv);
 			return;
 		}
 
-		vals.resize(vals.size() + 1);
 		this->vals[vals_size] = (kv);
 		vals_size++;
 	}
@@ -63,7 +59,8 @@ namespace trees{
 		auto lb_iter = std::lower_bound(this->vals.data(), vals.data() + vals_size, kv,
 										[](const std::pair<Key, Value> &l, const std::pair<Key, Value> &r){return l.first < r.first; });
 		if (lb_iter != this->vals.data() + vals_size) {
-			auto pos = this->childs.begin() + std::distance(this->vals.data(), lb_iter);
+			auto d = std::distance(this->vals.data(), lb_iter);
+			auto pos = this->childs.begin()+d;
 			this->childs.insert(pos + 1, C);
 			return;
 		} else {
@@ -85,7 +82,7 @@ namespace trees{
 
 	template<class Key, class Value>
 	typename BTree<Key, Value>::Node::Ptr BTree<Key, Value>::make_node() {
-		return std::make_shared<typename BTree<Key, Value>::Node>(this->n);
+		return std::make_shared<typename BTree<Key, Value>::Node>(this->n*2);
 	}
 
 	template<class Key, class Value>
@@ -131,8 +128,8 @@ namespace trees{
             return iner_find(key, cur_node->childs[0], out_ptr, out_res);
         }
 
-		if ((cur_node->childs.size() != 0) && (cur_node->vals.size() != 0)) {
-			if (key >= cur_node->vals[cur_node->vals.size() - 1].first) {
+		if ((cur_node->childs.size() != 0) && (cur_node->vals_size != 0)) {
+			if (key >= cur_node->vals[cur_node->vals_size - 1].first) {
 				auto last = cur_node->childs[cur_node->childs.size() - 1];
 				return iner_find(key, last, out_ptr, out_res);
 			}
@@ -176,7 +173,7 @@ namespace trees{
 
 	template<class Key, class Value>
 	bool BTree<Key, Value>::isFull(const typename BTree<Key, Value>::Node::Ptr node)const {
-        return (node->vals.size()+1) >= (2 * n);
+        return (node->vals_size+1) >= (n*2);
 	}
 
 	template<class Key, class Value>
@@ -200,22 +197,27 @@ namespace trees{
 		auto C = this->make_node();
 		C->is_leaf = node->is_leaf;
 
-		auto pos_half_index = (node->vals.size() / 2);
+		auto pos_half_index = (node->vals_size / 2);
 		auto midle = node->vals[pos_half_index];
 		auto pos_half = node->vals.begin() + pos_half_index;
+		auto vals_begin = pos_half_index;
 
-		if (C->is_leaf) {
-			C->vals = typename Node::value_vector(pos_half, node->vals.begin() + node->vals_size);
-		} else {
-			C->vals = typename Node::value_vector(pos_half + 1, node->vals.begin() + node->vals_size);
+		if (!C->is_leaf) {
+			vals_begin++;
+		} 
+		
+		size_t insert_pos = 0;
+		for (size_t i = vals_begin; i < node->vals_size; i++) {
+			C->vals[insert_pos] = node->vals[i];
+			C->vals_size++;
+			insert_pos++;
 		}
-				
-		node->vals.erase(pos_half, node->vals.begin() + node->vals_size);
+
+		node->vals_size = pos_half_index;
 		auto tmp = node->next;
 		node->next = C;
 		C->next = tmp;
-		C->vals_size = C->vals.size();
-		node->vals_size = node->vals.size();
+		
 		if (node->childs.size() > 0) {
 			size_t new_count = 0;
 			size_t old_count = 0;

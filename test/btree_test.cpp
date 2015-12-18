@@ -97,12 +97,15 @@ BOOST_AUTO_TEST_CASE(QueryRange) {
 	size_t prev_key{};
 	bool first = true;
 	while (start_node != stop_node) {
-		for (size_t i = 0; i < start_node->vals.size(); i++) {
+		for (size_t i = 0; i < start_node->vals_size; i++) {
 			auto current_key = start_node->vals[i].first;
 			if (first) {
 				prev_key = current_key;
 				first = false;
 			} else {
+				if (current_key - 1 != prev_key) {
+					int a = 3;
+				}
 				BOOST_CHECK_EQUAL(current_key - 1, prev_key);
 				prev_key = current_key;
 			}
