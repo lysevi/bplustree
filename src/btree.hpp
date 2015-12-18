@@ -23,11 +23,13 @@ namespace trees{
 	void BTree<Key, Value>::Node::insertValue(Key key, Value val) {
         auto kv = node_data(key,val);
 		if (vals.size() == 0) {
-			vals.push_back(kv);
+			vals.resize(1);
+			vals[0]=kv;
 			return;
 		} else {
 			if (vals.begin()->first > key) {
-				vals.insert(vals.begin(), kv);
+				vals.resize(vals.size() + 1);
+				insert_to_array(vals.data(), vals.size(), 0, kv);
 				return;
 			}
 		}
@@ -35,7 +37,9 @@ namespace trees{
 		auto lb_iter = std::lower_bound(this->vals.begin(), this->vals.end(), kv,
 										[](const std::pair<Key, Value> &l, const std::pair<Key, Value> &r){return l.first < r.first; });
 		if (lb_iter != this->vals.end()) {
-			this->vals.insert(lb_iter, kv);
+			auto d = std::distance(vals.begin(), lb_iter);
+			vals.resize(vals.size() + 1);
+			insert_to_array(vals.data(), vals.size(), d, kv);
 			return;
 		}
 
