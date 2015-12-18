@@ -10,10 +10,10 @@ namespace trees{
 //            }
             std::swap(array[i],array[i-1]);
 
-            for(size_t pos=0;pos<sz;pos++){
+            /*for(size_t pos=0;pos<sz;pos++){
                 std::cout<<" * "<<array[pos];
             }
-            std::cout<<std::endl;
+            std::cout<<std::endl;*/
 
         }
         array[insert_pos]=value;
