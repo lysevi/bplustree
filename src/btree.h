@@ -39,6 +39,7 @@ namespace trees
 			typedef std::weak_ptr<Node> Weak;
             typedef std::vector<node_data> value_vector;
             value_vector vals;       // n >= size < 2*n
+			size_t vals_size;
 			std::vector<Ptr> childs;   // size(vals)+1
 			bool is_leaf;
 

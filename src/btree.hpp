@@ -4,6 +4,7 @@ namespace trees{
 	template<class Key, class Value>
 	BTree<Key,Value>::Node::Node() {
 		is_leaf = false;
+		vals_size = 0;
 	}
 
 	template<class Key, class Value>
@@ -11,6 +12,7 @@ namespace trees{
 		is_leaf = false;
         this->childs.reserve(cap+1);
         this->vals.reserve(cap+1);
+		vals_size = 0;
 	}
 	
 	template<class Key, class Value>
@@ -24,26 +26,31 @@ namespace trees{
         auto kv = node_data(key,val);
 		if (vals.size() == 0) {
 			vals.resize(1);
+			vals_size++;
 			vals[0]=kv;
 			return;
 		} else {
 			if (vals.begin()->first > key) {
 				vals.resize(vals.size() + 1);
-				insert_to_array(vals.data(), vals.size(), 0, kv);
+				vals_size++;
+				insert_to_array(vals.data(), vals_size, 0, kv);
 				return;
 			}
 		}
 
-		auto lb_iter = std::lower_bound(this->vals.begin(), this->vals.end(), kv,
+		auto lb_iter = std::lower_bound(this->vals.begin(), this->vals.begin() + vals_size, kv,
 										[](const std::pair<Key, Value> &l, const std::pair<Key, Value> &r){return l.first < r.first; });
-		if (lb_iter != this->vals.end()) {
+		if (lb_iter != this->vals.begin()+vals_size) {
 			auto d = std::distance(vals.begin(), lb_iter);
 			vals.resize(vals.size() + 1);
+			vals_size++;
 			insert_to_array(vals.data(), vals.size(), d, kv);
 			return;
 		}
 
-		this->vals.push_back(kv);
+		vals.resize(vals.size() + 1);
+		this->vals[vals_size] = (kv);
+		vals_size++;
 	}
 
 	template<class Key, class Value>
@@ -53,9 +60,9 @@ namespace trees{
 			return;
 		}
 		auto kv = std::make_pair(key, Value{});
-		auto lb_iter = std::lower_bound(this->vals.begin(), this->vals.end(), kv,
+		auto lb_iter = std::lower_bound(this->vals.begin(), vals.begin() + vals_size, kv,
 										[](const std::pair<Key, Value> &l, const std::pair<Key, Value> &r){return l.first < r.first; });
-		if (lb_iter != this->vals.end()) {
+		if (lb_iter != this->vals.begin() + vals_size) {
 			auto pos = this->childs.begin() + std::distance(this->vals.begin(), lb_iter);
 			this->childs.insert(pos + 1, C);
 			return;
@@ -105,13 +112,13 @@ namespace trees{
 	template<class Key, class Value>
 	bool BTree<Key, Value>::iner_find(Key key, typename Node::Ptr cur_node, typename Node::Ptr&out_ptr, Value &out_res)const {
 		if (cur_node->is_leaf) {
-			auto find_res = std::lower_bound(cur_node->vals.begin(), cur_node->vals.end(), std::make_pair(key, Value()),
+			auto find_res = std::lower_bound(cur_node->vals.begin(), cur_node->vals.begin() + cur_node->vals_size, std::make_pair(key, Value()),
 										   [key](const std::pair<Key, Value> &v, const std::pair<Key, Value> &v2) {
 				return (v.first < v2.first);
 									});
 
 			out_ptr = cur_node;
-			if (find_res != cur_node->vals.end()) {
+			if (find_res != cur_node->vals.begin() + cur_node->vals_size) {
 				out_res = find_res->second;
 				return true;
 			}
@@ -139,7 +146,7 @@ namespace trees{
             //if((cur<=key) && ((key<nxt)))
 			{
 				auto kv = std::make_pair(key, Value());
-				auto low_bound = std::lower_bound(cur_node->vals.begin(), cur_node->vals.end(), kv,
+				auto low_bound = std::lower_bound(cur_node->vals.begin(), cur_node->vals.begin() + cur_node->vals_size, kv,
 												  [key](const std::pair<Key, Value> &v, const std::pair<Key, Value> &v2) {
 					return (v.first < v2.first);
 				});
@@ -198,16 +205,17 @@ namespace trees{
 		auto pos_half = node->vals.begin() + pos_half_index;
 
 		if (C->is_leaf) {
-            C->vals=typename Node::value_vector(pos_half, node->vals.end());
+			C->vals = typename Node::value_vector(pos_half, node->vals.begin() + node->vals_size);
 		} else {
-            C->vals = typename Node::value_vector(pos_half + 1, node->vals.end());
+			C->vals = typename Node::value_vector(pos_half + 1, node->vals.begin() + node->vals_size);
 		}
 				
-        node->vals.erase(pos_half , node->vals.end());
+		node->vals.erase(pos_half, node->vals.begin() + node->vals_size);
 		auto tmp = node->next;
 		node->next = C;
 		C->next = tmp;
-		
+		C->vals_size = C->vals.size();
+		node->vals_size = node->vals.size();
 		if (node->childs.size() > 0) {
 			size_t new_count = 0;
 			size_t old_count = 0;
