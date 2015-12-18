@@ -10,9 +10,10 @@ namespace trees{
 	template<class Key, class Value>
 	BTree<Key, Value>::Node::Node(size_t cap) {
 		is_leaf = false;
-        this->childs.reserve(cap+1);
+        this->childs.resize(cap+1);
         this->vals.resize(cap+1);
 		vals_size = 0;
+		childs_size = 0;
 	}
 	
 	template<class Key, class Value>
@@ -52,7 +53,9 @@ namespace trees{
 	template<class Key, class Value>
 	void BTree<Key, Value>::Node::insertChild(Key key, typename Node::Ptr C) {
 		if (key == this->vals.back().first) {
-			this->childs.push_back(C);
+			//this->childs.resize(this->childs.size() + 1);
+			this->childs[childs_size]=C;
+			childs_size++;
 			return;
 		}
 		auto kv = std::make_pair(key, Value{});
@@ -61,10 +64,14 @@ namespace trees{
 		if (lb_iter != this->vals.data() + vals_size) {
 			auto d = std::distance(this->vals.data(), lb_iter);
 			auto pos = this->childs.begin()+d;
-			this->childs.insert(pos + 1, C);
+			//this->childs.resize(this->childs.size() + 1);
+			insert_to_array(this->childs.data(), childs_size+1, d+1, C);
+			childs_size++;
 			return;
 		} else {
-			this->childs.push_back(C);
+			//this->childs.resize(this->childs.size() + 1);
+			this->childs[childs_size] = C;
+			childs_size++;
 		}
 		assert(false);
 	}
@@ -128,9 +135,9 @@ namespace trees{
             return iner_find(key, cur_node->childs[0], out_ptr, out_res);
         }
 
-		if ((cur_node->childs.size() != 0) && (cur_node->vals_size != 0)) {
+		if ((cur_node->childs_size != 0) && (cur_node->vals_size != 0)) {
 			if (key >= cur_node->vals[cur_node->vals_size - 1].first) {
-				auto last = cur_node->childs[cur_node->childs.size() - 1];
+				auto last = cur_node->childs[cur_node->childs_size - 1];
 				return iner_find(key, last, out_ptr, out_res);
 			}
 		}
@@ -218,33 +225,39 @@ namespace trees{
 		node->next = C;
 		C->next = tmp;
 		
-		if (node->childs.size() > 0) {
+		if (node->childs_size > 0) {
 			size_t new_count = 0;
 			size_t old_count = 0;
-			for (auto c : node->childs) {
-				if (c->vals[0].first >= midle.first) {
+			for (size_t i = 0; i<node->childs_size; i++) {
+				auto ch = node->childs[i];
+				if (ch->vals[0].first >= midle.first) {
 					new_count++;
 				} else {
 					old_count++;
 				}
 			}
-			std::vector<typename Node::Ptr> new_childs{ new_count };
-			std::vector<typename Node::Ptr> old_childs{ old_count };
+			std::vector<typename Node::Ptr> new_childs{ n*2 };
+			std::vector<typename Node::Ptr> old_childs{ n*2 };
 			new_count = old_count = 0;
-			for (auto c : node->childs) {
-                if (c->vals[0].first >= midle.first) {
-					new_childs[new_count++]=c;
+			for(size_t i=0;i<node->childs_size;i++){
+				auto ch = node->childs[i];
+                if (ch->vals[0].first >= midle.first) {
+					new_childs[new_count++]=ch;
 				} else {
-					old_childs[old_count++] = c;
+					old_childs[old_count++] = ch;
 				}
 			}
-			node->childs = old_childs;
-			for (auto c : node->childs) {
-				c->parent = node;
+			node->childs = Node::child_vector{ old_childs };
+			node->childs_size = old_count;
+			for (size_t i = 0; i<node->childs_size; i++) {
+				auto ch = node->childs[i];
+				ch->parent = node;
 			}
-			C->childs = new_childs;
-			for (auto c : C->childs) {
-				c->parent = C;
+			C->childs = Node::child_vector{ new_childs };
+			C->childs_size = new_count;
+			for (size_t i = 0; i<C->childs_size; i++) {
+				auto ch = C->childs[i];
+				ch->parent = C;
 			}
 
 		}
@@ -262,8 +275,10 @@ namespace trees{
 			m_root = node2insert;
           
 			node2insert->insertValue(midle.first, midle.second);
-			node2insert->childs.push_back(node);
-			node2insert->childs.push_back(C);
+			node2insert->childs[node2insert->childs_size]=(node);
+			node2insert->childs_size++;
+			node2insert->childs[node2insert->childs_size] = (C);
+			node2insert->childs_size++;
 			node->parent = m_root;
 			C->parent = m_root;
 		}

@@ -38,9 +38,11 @@ namespace trees
 			typedef std::shared_ptr<Node> Ptr;
 			typedef std::weak_ptr<Node> Weak;
             typedef std::vector<node_data> value_vector;
+			typedef std::vector<Ptr> child_vector;
             value_vector vals;       // n >= size < 2*n
 			size_t vals_size;
-			std::vector<Ptr> childs;   // size(vals)+1
+			child_vector childs;   // size(vals)+1
+			size_t childs_size;
 			bool is_leaf;
 
 			typename Node::Weak parent;
