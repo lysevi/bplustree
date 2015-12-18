@@ -63,13 +63,10 @@ namespace trees{
 										[](const std::pair<Key, Value> &l, const std::pair<Key, Value> &r){return l.first < r.first; });
 		if (lb_iter != this->vals.data() + vals_size) {
 			auto d = std::distance(this->vals.data(), lb_iter);
-			auto pos = this->childs.begin()+d;
-			//this->childs.resize(this->childs.size() + 1);
 			insert_to_array(this->childs.data(), childs_size+1, d+1, C);
 			childs_size++;
 			return;
 		} else {
-			//this->childs.resize(this->childs.size() + 1);
 			this->childs[childs_size] = C;
 			childs_size++;
 		}
@@ -206,7 +203,6 @@ namespace trees{
 
 		auto pos_half_index = (node->vals_size / 2);
 		auto midle = node->vals[pos_half_index];
-		auto pos_half = node->vals.begin() + pos_half_index;
 		auto vals_begin = pos_half_index;
 
 		if (!C->is_leaf) {
@@ -247,13 +243,13 @@ namespace trees{
 					old_childs[old_count++] = ch;
 				}
 			}
-			node->childs = Node::child_vector{ old_childs };
+            node->childs = typename Node::child_vector{ old_childs };
 			node->childs_size = old_count;
 			for (size_t i = 0; i<node->childs_size; i++) {
 				auto ch = node->childs[i];
 				ch->parent = node;
 			}
-			C->childs = Node::child_vector{ new_childs };
+            C->childs =  typename Node::child_vector{ new_childs };
 			C->childs_size = new_count;
 			for (size_t i = 0; i<C->childs_size; i++) {
 				auto ch = C->childs[i];

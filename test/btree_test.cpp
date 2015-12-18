@@ -103,9 +103,6 @@ BOOST_AUTO_TEST_CASE(QueryRange) {
 				prev_key = current_key;
 				first = false;
 			} else {
-				if (current_key - 1 != prev_key) {
-					int a = 3;
-				}
 				BOOST_CHECK_EQUAL(current_key - 1, prev_key);
 				prev_key = current_key;
 			}
