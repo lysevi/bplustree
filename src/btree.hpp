@@ -82,7 +82,7 @@ namespace trees{
 	
 	template<class Key, class Value>
     BTree<Key,Value>::BTree(size_t N):n(N) {
-        cache=new std::vector<Node>(3000);
+        cache=new std::vector<Node>(100000);
         for(size_t i=0;i<cache->size();i++){
             (*cache)[i]=Node(this->n*2);
         }
