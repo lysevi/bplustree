@@ -128,49 +128,38 @@ namespace trees{
 			}
 		}
 
+         //case k < k_0
         if (key < cur_node->vals[0].first) {
             return iner_find(key, cur_node->childs[0], out_ptr, out_res);
         }
 
-		if ((cur_node->childs_size != 0) && (cur_node->vals_size != 0)) {
-			if (key >= cur_node->vals[cur_node->vals_size - 1].first) {
-				auto last = cur_node->childs[cur_node->childs_size - 1];
-				return iner_find(key, last, out_ptr, out_res);
-			}
-		}
-
-		
-   /*     for (size_t i = 0; i < cur_node->vals.size()-1; i++) {
-            auto cur=cur_node->vals[i].first;
-            auto nxt=cur_node->vals[i+1].first;*/
-
-            //if((cur<=key) && ((key<nxt)))
-			{
-				auto kv = std::make_pair(key, Value());
-				auto low_bound = std::lower_bound(cur_node->vals.data(), cur_node->vals.data() + cur_node->vals_size, kv,
-												  [key](const std::pair<Key, Value> &v, const std::pair<Key, Value> &v2) {
-					return (v.first < v2.first);
-				});
-				
-				
-				//if ((low_bound != cur_node->vals.end())) 
-				{
-					auto nxt_it = low_bound + 1;
-					if (low_bound->first != kv.first) {
-						low_bound--;
-						nxt_it--;
-					}
-					if (key < nxt_it->first) {
-						auto d = std::distance(cur_node->vals.data(), low_bound);
-						return iner_find(key, cur_node->childs[d+1], out_ptr, out_res);
-					}
-					
-				}
-                  /*return iner_find(key, cur_node->childs[i+1], out_ptr, out_res);*/
+         //case k_d ≤ k
+        if ((cur_node->childs_size != 0) && (cur_node->vals_size != 0)) {
+            if (key >= cur_node->vals[cur_node->vals_size - 1].first) {
+                auto last = cur_node->childs[cur_node->childs_size - 1];
+                return iner_find(key, last, out_ptr, out_res);
             }
-		/*}*/
+        }
 
-		
+        // case k_i ≤ k < k_{i+1}
+        auto kv = node_data(key, Value());
+        auto low_bound = std::lower_bound(cur_node->vals.data(),
+                                          cur_node->vals.data() + cur_node->vals_size,
+                                          kv,
+                                          [key](const node_data& v, const node_data&v2)
+                                            {
+                                                return (v.first < v2.first);
+                                            });
+
+        auto nxt_it = low_bound + 1;
+        if (low_bound->first != kv.first) {
+            low_bound--;
+            nxt_it--;
+        }
+        if (key < nxt_it->first) {
+            auto d = std::distance(cur_node->vals.data(), low_bound);
+            return iner_find(key, cur_node->childs[d+1], out_ptr, out_res);
+        }
 
 		return false;
 	}
@@ -222,18 +211,11 @@ namespace trees{
 		C->next = tmp;
 		
 		if (node->childs_size > 0) {
-			size_t new_count = 0;
-			size_t old_count = 0;
-			for (size_t i = 0; i<node->childs_size; i++) {
-				auto ch = node->childs[i];
-				if (ch->vals[0].first >= midle.first) {
-					new_count++;
-				} else {
-					old_count++;
-				}
-			}
-			std::vector<typename Node::Ptr> new_childs{ n*2 };
-			std::vector<typename Node::Ptr> old_childs{ n*2 };
+            size_t new_count = node->childs_size/2;
+            size_t old_count = node->childs_size/2;
+
+            std::vector<typename Node::Ptr> new_childs{ n*2 };
+            std::vector<typename Node::Ptr> old_childs{ n*2 };
 			new_count = old_count = 0;
 			for(size_t i=0;i<node->childs_size;i++){
 				auto ch = node->childs[i];
@@ -243,19 +225,20 @@ namespace trees{
 					old_childs[old_count++] = ch;
 				}
 			}
-            node->childs = typename Node::child_vector{ old_childs };
-			node->childs_size = old_count;
-			for (size_t i = 0; i<node->childs_size; i++) {
-				auto ch = node->childs[i];
-				ch->parent = node;
-			}
-            C->childs =  typename Node::child_vector{ new_childs };
-			C->childs_size = new_count;
-			for (size_t i = 0; i<C->childs_size; i++) {
-				auto ch = C->childs[i];
-				ch->parent = C;
-			}
 
+
+			C->childs_size = new_count;
+            size_t pos=0;
+            for (size_t i = old_count; i<node->childs_size; i++) {
+                auto ch = node->childs[i];
+				ch->parent = C;
+                C->childs[pos++]=ch;
+			}
+            for(size_t i=old_count;i<node->childs_size;i++){
+                node->childs[i]=nullptr;
+            }
+
+            node->childs_size = old_count;
 		}
         typename Node::Ptr node2insert = nullptr;
 
