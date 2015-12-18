@@ -27,7 +27,7 @@ int main(int argc, char*argv[]) {
 		std::istringstream(argv[2]) >> max_N;
 	}
 	std::cout << "insertion: " << insertion_count << std::endl;
-    for (size_t N = 50; N < max_N; N++) {
+    for (size_t N = 4; N < max_N; N++) {
 		std::cout << "N=" << N;
 		trees::BTree<size_t, BigData> t2(N);
 		std::map<size_t, BigData> mt2{};
