@@ -105,7 +105,7 @@ BOOST_AUTO_TEST_CASE(QueryRange) {
 				prev_key = current_key;
 			}
 		}
-        start_node = &(*t.cache)[start_node->next];
+        start_node =t.getNode(start_node->next);
 	}
 }
 

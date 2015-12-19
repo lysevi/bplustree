@@ -87,7 +87,7 @@ namespace trees{
             (*cache)[i]=Node(this->n*2);
         }
         cache_pos=1;
-        m_root = BTree<Key,Value>::make_node().first;
+        m_root = BTree<Key,Value>::make_node();
 		m_root->is_leaf = true;
 
 	}
@@ -99,14 +99,22 @@ namespace trees{
         delete this->cache;
 	}
 
+    template<class Key, class Value>
+    typename BTree<Key, Value>::Node::Ptr BTree<Key, Value>::getNode(const typename BTree<Key, Value>::Node::Weak &w)const{
+        return &cache->at(w);
+    }
+
+    template<class Key, class Value>
+    typename BTree<Key, Value>::Node::Ptr BTree<Key, Value>::getNode(const typename BTree<Key, Value>::Node::Weak &w){
+         return &cache->at(w);
+    }
+
 	template<class Key, class Value>
-    std::pair<typename BTree<Key, Value>::Node::Ptr,typename BTree<Key, Value>::Node::Weak> BTree<Key, Value>::make_node() {
+    typename BTree<Key, Value>::Node::Ptr BTree<Key, Value>::make_node() {
         auto ptr=&(*cache)[cache_pos];
-        //(*cache)[cache_pos]=ptr;
         ptr->id=cache_pos;
-        auto pos=cache_pos;
         cache_pos++;
-        return std::make_pair(ptr,pos);
+        return ptr;
 	}
 
 	template<class Key, class Value>
@@ -150,14 +158,14 @@ namespace trees{
 
          //case k < k_0
         if (key < cur_node->vals[0].first) {
-            return iner_find(key, &(*cache)[cur_node->childs[0]], out_ptr, out_res);
+            return iner_find(key, this->getNode(cur_node->childs[0]), out_ptr, out_res);
         }
 
          //case k_d ≤ k
         if ((cur_node->childs_size != 0) && (cur_node->vals_size != 0)) {
             if (key >= cur_node->vals[cur_node->vals_size - 1].first) {
                 auto last = cur_node->childs[cur_node->childs_size - 1];
-                return iner_find(key, &(*cache)[last], out_ptr, out_res);
+                return iner_find(key, this->getNode(last), out_ptr, out_res);
             }
         }
 
@@ -178,7 +186,7 @@ namespace trees{
         }
         if (key < nxt_it->first) {
             auto d = std::distance(cur_node->vals.data(), low_bound);
-            return iner_find(key, &(*cache)[cur_node->childs[d+1]], out_ptr, out_res);
+            return iner_find(key,getNode(cur_node->childs[d+1]), out_ptr, out_res);
         }
 
 		return false;
@@ -207,8 +215,7 @@ namespace trees{
 
 	template<class Key, class Value>
 	void BTree<Key, Value>::split_node(typename BTree<Key, Value>::Node::Ptr node) {
-        auto C_rec=this->make_node();
-        auto C = C_rec.first;
+        auto C = this->make_node();
 		C->is_leaf = node->is_leaf;
 
 		auto pos_half_index = (node->vals_size / 2);
@@ -228,7 +235,7 @@ namespace trees{
 
 		node->vals_size = pos_half_index;
 		auto tmp = node->next;
-        node->next = C_rec.second;
+        node->next = C->id;
 		C->next = tmp;
 		
 		if (node->childs_size > 0) {
@@ -239,8 +246,8 @@ namespace trees{
             size_t pos=0;
             for (size_t i = old_count; i<node->childs_size; i++) {
                 auto ch_ind = node->childs[i];
-                auto ch = &(*cache)[ch_ind];
-                ch->parent = C_rec.second;
+                auto ch = getNode(ch_ind);
+                ch->parent = C->id;
                 C->childs[pos++]=ch_ind;
 			}
             for(size_t i=old_count;i<node->childs_size;i++){
@@ -253,15 +260,14 @@ namespace trees{
 
         auto parent_ind= node->parent;
         if (parent_ind!=0) {
-            node2insert = &(*cache)[parent_ind];
+            node2insert =getNode(parent_ind);
 			node2insert->insertValue(midle.first,midle.second);
 
 			node2insert->insertChild(midle.first, C);
 			C->parent = node->parent;
 		} else {
-            auto node2insert_rec = this->make_node();
-            node2insert = node2insert_rec.first;
-            m_root->parent = node2insert_rec.second;
+            node2insert = this->make_node();
+            m_root->parent = node2insert->id;
 			m_root = node2insert;
           
 			node2insert->insertValue(midle.first, midle.second);

@@ -64,17 +64,18 @@ namespace trees
         typename Node::Ptr  find_node(Key key)const;
 		bool insert(Key key, Value val); 
 		void print()const;
-        std::vector<Node> *cache;
+        typename Node::Ptr getNode(const typename Node::Weak &w);
+        typename Node::Ptr getNode(const typename Node::Weak &w)const;
 
 	protected:
-        std::pair<typename Node::Ptr,typename Node::Weak> make_node();
+        typename Node::Ptr make_node();
 		bool iner_find(Key key, typename Node::Ptr cur_node, typename Node::Ptr&out_ptr, Value &out_res)const; // return last_node, false if fail, or cur_node,true;
 		bool isFull(const typename Node::Ptr node)const;
 		void split_node(typename Node::Ptr node);
 		void print(const typename Node::Ptr& root)const;
 	private:
 		size_t n;
-
+        std::vector<Node> *cache;
         size_t cache_pos;
 		typename Node::Ptr m_root;
 	};
