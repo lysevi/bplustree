@@ -3,7 +3,7 @@
 #include <vector>
 #include <memory>
 #include <cassert>
-#include <iostream>
+#include <ostream>
 #include <algorithm>
 #include <btree_common.h>
 namespace trees
@@ -61,7 +61,7 @@ namespace trees
 		Value find(Key key)const;
         typename Node::Ptr  find_node(Key key)const;
 		bool insert(Key key, Value val); 
-        //void print()const;
+        void to_stream(std::ostream&stream)const;
         typename Node::Ptr getNode(const typename Node::Weak &w);
         typename Node::Ptr getNode(const typename Node::Weak &w)const;
 
@@ -70,7 +70,7 @@ namespace trees
 		bool iner_find(Key key, typename Node::Ptr cur_node, typename Node::Ptr&out_ptr, Value &out_res)const; // return last_node, false if fail, or cur_node,true;
 		bool isFull(const typename Node::Ptr node)const;
 		void split_node(typename Node::Ptr node);
-//		void print(const typename Node::Ptr& root)const;
+        void to_stream(std::ostream&stream, const typename Node::Ptr& root)const;
 	private:
 		size_t n;
         std::vector<Node> *cache;

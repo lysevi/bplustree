@@ -286,21 +286,21 @@ namespace trees{
 		}
 	}
 
-//	template<class Key, class Value>
-//	void BTree<Key,Value>::print()const {
-//		print(m_root);
-//	}
+    template<class Key, class Value>
+    void BTree<Key, Value>::to_stream(std::ostream&stream)const{
+        to_stream(stream,m_root);
+    }
 
-//	template<class Key, class Value>
-//	void BTree<Key, Value>::print(const typename Node::Ptr& root)const {
-//		std::cout << "{  [";
-//		for (auto v : root->vals) {
-//			std::cout << " " << v;
-//		}
-//		std::cout << "], ";
-//		for (auto c : root->childs) {
-//			print(c);
-//		}
-//		std::cout << "}" << std::endl;
-//	}
+    template<class Key, class Value>
+    void BTree<Key, Value>::to_stream(std::ostream&stream, const typename BTree<Key, Value>::Node::Ptr& root)const{
+        stream << "{  [";
+        for (auto v : root->vals) {
+            stream << " " << v.first;
+        }
+        stream << "], ";
+        for (auto c : root->childs) {
+            to_stream(stream,getNode(c));
+        }
+        stream << "}" << std::endl;
+    }
 }
