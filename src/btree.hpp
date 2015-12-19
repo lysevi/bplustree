@@ -222,10 +222,12 @@ namespace trees{
 		auto midle = node->vals[pos_half_index];
 		auto vals_begin = pos_half_index;
 
+        // copy midlle?!
 		if (!C->is_leaf) {
 			vals_begin++;
 		} 
 		
+        // copy node.keys[midle,end]
 		size_t insert_pos = 0;
 		for (size_t i = vals_begin; i < node->vals_size; i++) {
 			C->vals[insert_pos] = node->vals[i];
@@ -233,39 +235,39 @@ namespace trees{
 			insert_pos++;
 		}
 
+        //node.keys[begin,midle)
 		node->vals_size = pos_half_index;
 		auto tmp = node->next;
         node->next = C->id;
 		C->next = tmp;
 		
-		if (node->childs_size > 0) {
+        if (node->childs_size > 0) {// merge childs
             size_t new_count = node->childs_size/2;
-            size_t old_count = node->childs_size/2;
 
             C->childs_size = new_count;
             size_t pos=0;
-            for (size_t i = old_count; i<node->childs_size; i++) {
+            for (size_t i = new_count; i<node->childs_size; i++) {
                 auto ch_ind = node->childs[i];
                 auto ch = getNode(ch_ind);
                 ch->parent = C->id;
                 C->childs[pos++]=ch_ind;
 			}
-            for(size_t i=old_count;i<node->childs_size;i++){
+            for(size_t i=new_count;i<node->childs_size;i++){
                 node->childs[i]=0;
             }
 
-            node->childs_size = old_count;
+            node->childs_size = new_count;
 		}
         typename Node::Ptr node2insert = nullptr;
 
         auto parent_ind= node->parent;
-        if (parent_ind!=0) {
+        if (parent_ind!=0) { //put to parent
             node2insert =getNode(parent_ind);
 			node2insert->insertValue(midle.first,midle.second);
 
 			node2insert->insertChild(midle.first, C);
 			C->parent = node->parent;
-		} else {
+        } else { //parent new root
             node2insert = this->make_node();
             m_root->parent = node2insert->id;
 			m_root = node2insert;
@@ -284,21 +286,21 @@ namespace trees{
 		}
 	}
 
-	template<class Key, class Value>
-	void BTree<Key,Value>::print()const {
-		print(m_root);
-	}
+//	template<class Key, class Value>
+//	void BTree<Key,Value>::print()const {
+//		print(m_root);
+//	}
 
-	template<class Key, class Value>
-	void BTree<Key, Value>::print(const typename Node::Ptr& root)const {
-		std::cout << "{  [";
-		for (auto v : root->vals) {
-			std::cout << " " << v;
-		}
-		std::cout << "], ";
-		for (auto c : root->childs) {
-			print(c);
-		}
-		std::cout << "}" << std::endl;
-	}
+//	template<class Key, class Value>
+//	void BTree<Key, Value>::print(const typename Node::Ptr& root)const {
+//		std::cout << "{  [";
+//		for (auto v : root->vals) {
+//			std::cout << " " << v;
+//		}
+//		std::cout << "], ";
+//		for (auto c : root->childs) {
+//			print(c);
+//		}
+//		std::cout << "}" << std::endl;
+//	}
 }
