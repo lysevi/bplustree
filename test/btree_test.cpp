@@ -12,7 +12,7 @@
 void array_insert_helper(int *t1, int *t2, size_t insert_pos, int val) {
 	trees::insert_to_array(t1, 5, insert_pos, val);
 
-	for (size_t i = 0; i<5; i++) {
+	for (size_t i = 0; i < 5; i++) {
 		BOOST_CHECK_EQUAL(t1[i], t2[i]);
 	}
 }
@@ -52,36 +52,25 @@ BOOST_AUTO_TEST_CASE(ArrayFuncs_insert) {
 
 
 BOOST_AUTO_TEST_CASE(BtreeTest) {
-    std::set<int> inserted;
+	std::set<int> inserted;
 	const size_t n = 3;
-	trees::BTree<int,int> t(n);
-    BOOST_CHECK_EQUAL(t.find(10), 0);
+	trees::BTree<int, int> t(n);
+	BOOST_CHECK_EQUAL(t.find(10), 0);
 
-    bool insert_status =false;
+	bool insert_status = false;
 
-    for (int i = 0; i < int(2 * n); ++i) {
-        insert_status = t.insert(i,i-1);
+	for (int i = 0; i < int(2 * n); ++i) {
+		insert_status = t.insert(i, i - 1);
 		BOOST_CHECK(insert_status);
-		BOOST_CHECK_EQUAL(t.find(i), i-1);
-        inserted.insert(i);
+		BOOST_CHECK_EQUAL(t.find(i), i - 1);
+		inserted.insert(i);
 	}
 
-    insert_status = t.insert(111,110);
+	insert_status = t.insert(111, 110);
 	BOOST_CHECK(insert_status);
 	BOOST_CHECK_EQUAL(t.find(111), 110);
 
-    for (int i = 200; i < 300; i++) {
-        insert_status = t.insert(i, i - 1);
-        if (!insert_status) {
-            std::stringstream ss;
-            ss << " insert " << i << " error";
-            BOOST_FAIL(ss.str());
-        }
-        BOOST_CHECK_EQUAL(t.find(i), i - 1);
-        inserted.insert(i);
-    }
-
-    for (int i = 50; i < 100; i++) {
+	for (int i = 200; i < 300; i++) {
 		insert_status = t.insert(i, i - 1);
 		if (!insert_status) {
 			std::stringstream ss;
@@ -89,39 +78,50 @@ BOOST_AUTO_TEST_CASE(BtreeTest) {
 			BOOST_FAIL(ss.str());
 		}
 		BOOST_CHECK_EQUAL(t.find(i), i - 1);
-        inserted.insert(i);
+		inserted.insert(i);
 	}
 
-    for (int i = 30; i < 40; i++) {
-        insert_status = t.insert(i,i-1);
-        if (!insert_status) {
-            std::stringstream ss;
-            ss << " insert " << i << " error";
-            BOOST_FAIL(ss.str());
-        }
-		BOOST_CHECK_EQUAL(t.find(i), i - 1);
-        inserted.insert(i);
-    }
-
-    for (int i = 300; i < 400; i++) {
+	for (int i = 50; i < 100; i++) {
 		insert_status = t.insert(i, i - 1);
-        if (!insert_status) {
-            std::stringstream ss;
-            ss << " insert " << i << " error";
-            BOOST_FAIL(ss.str());
-        }
+		if (!insert_status) {
+			std::stringstream ss;
+			ss << " insert " << i << " error";
+			BOOST_FAIL(ss.str());
+		}
 		BOOST_CHECK_EQUAL(t.find(i), i - 1);
-        inserted.insert(i);
-    }
+		inserted.insert(i);
+	}
 
-    for(auto i: inserted){
-		auto res=t.find(i);
+	for (int i = 30; i < 40; i++) {
+		insert_status = t.insert(i, i - 1);
+		if (!insert_status) {
+			std::stringstream ss;
+			ss << " insert " << i << " error";
+			BOOST_FAIL(ss.str());
+		}
+		BOOST_CHECK_EQUAL(t.find(i), i - 1);
+		inserted.insert(i);
+	}
+
+	for (int i = 300; i < 400; i++) {
+		insert_status = t.insert(i, i - 1);
+		if (!insert_status) {
+			std::stringstream ss;
+			ss << " insert " << i << " error";
+			BOOST_FAIL(ss.str());
+		}
+		BOOST_CHECK_EQUAL(t.find(i), i - 1);
+		inserted.insert(i);
+	}
+
+	for (auto i : inserted) {
+		auto res = t.find(i);
 		if (res != (i - 1)) {
 			std::stringstream ss;
 			ss << " read " << i << " error";
-            BOOST_FAIL(ss.str());
+			BOOST_FAIL(ss.str());
 		}
-    }
+	}
 }
 
 BOOST_AUTO_TEST_CASE(QueryRange) {
@@ -132,8 +132,8 @@ BOOST_AUTO_TEST_CASE(QueryRange) {
 		t.insert(i, i);
 	}
 
-    auto start_node = t.find_node(0);
-    auto stop_node = t.find_node(insertion_count * 2);
+	auto start_node = t.find_node(0);
+	auto stop_node = t.find_node(insertion_count * 2);
 
 	size_t prev_key{};
 	bool first = true;
@@ -143,12 +143,13 @@ BOOST_AUTO_TEST_CASE(QueryRange) {
 			if (first) {
 				prev_key = current_key;
 				first = false;
-			} else {
+			}
+			else {
 				BOOST_CHECK_EQUAL(current_key - 1, prev_key);
 				prev_key = current_key;
 			}
 		}
-        start_node =t.getNode(start_node->next);
+		start_node = t.getNode(start_node->next);
 	}
 }
 
