@@ -8,6 +8,49 @@
 #include <iostream>
 #include <set>
 
+
+void array_insert_helper(int *t1, int *t2, size_t insert_pos, int val) {
+	trees::insert_to_array(t1, 5, insert_pos, val);
+
+	for (size_t i = 0; i<5; i++) {
+		BOOST_CHECK_EQUAL(t1[i], t2[i]);
+	}
+}
+
+BOOST_AUTO_TEST_CASE(ArrayFuncs_insert) {
+	typedef std::vector<int> int_array;
+	{
+		int_array t1 = { 1, 3, 4, 5, 0 };
+		int_array t2 = { 1, 3, 4, 5 };
+		t2.insert(t2.begin() + 1, 2);
+		array_insert_helper(t1.data(), t2.data(), 1, 2);
+	}
+
+	{
+		int_array t1 = { 1, 2, 3, 4, 0 };
+		int_array t2 = { 1, 2, 3, 4 };
+		t2.insert(t2.begin(), 2);
+
+		array_insert_helper(t1.data(), t2.data(), 0, 2);
+	}
+	{
+		int_array t1 = { 1, 2, 3, 4, 0 };
+		int_array t2 = { 1, 2, 3, 4 };
+		t2.insert(t2.begin() + 4, 2);
+
+		array_insert_helper(t1.data(), t2.data(), 4, 2);
+	}
+
+	{
+		int_array t1 = { 0, 0, 0, 0, 0 };
+		int_array t2 = { 0, 0, 0, 0 };
+		t2.insert(t2.begin(), 2);
+
+		array_insert_helper(t1.data(), t2.data(), 0, 2);
+	}
+}
+
+
 BOOST_AUTO_TEST_CASE(BtreeTest) {
     std::set<int> inserted;
 	const size_t n = 3;
@@ -107,47 +150,6 @@ BOOST_AUTO_TEST_CASE(QueryRange) {
 		}
         start_node =t.getNode(start_node->next);
 	}
-}
-
-void array_insert_helper(int *t1, int *t2, size_t insert_pos, int val) {
-	trees::insert_to_array(t1, 5, insert_pos, val);
-
-	for (size_t i = 0; i<5; i++) {
-		BOOST_CHECK_EQUAL(t1[i], t2[i]);
-	}
-}
-
-BOOST_AUTO_TEST_CASE(ArrayFuncs_insert) {
-	typedef std::vector<int> int_array;
-	{
-		int_array t1 = { 1, 3, 4, 5, 0 };
-		int_array t2 = { 1, 3, 4, 5};
-		t2.insert(t2.begin() + 1, 2);
-		array_insert_helper(t1.data(), t2.data(), 1, 2);
-	}
-
-   {
-	   int_array t1 = { 1, 2, 3, 4, 0 };
-	   int_array t2 = { 1, 2, 3, 4};
-	   t2.insert(t2.begin() , 2);
-
-	   array_insert_helper(t1.data(), t2.data(), 0, 2);
-   }
-   {
-	   int_array t1= { 1, 2, 3, 4, 0 };
-	   int_array t2= { 1, 2, 3, 4};
-	   t2.insert(t2.begin()+4, 2);
-
-	   array_insert_helper(t1.data(), t2.data(), 4, 2);
-   }
-
-   {
-	   int_array t1 = { 0, 0, 0, 0, 0 };
-	   int_array t2 = { 0, 0, 0, 0 };
-	   t2.insert(t2.begin(), 2);
-
-	   array_insert_helper(t1.data(), t2.data(), 0, 2);
-   }
 }
 
 //BOOST_AUTO_TEST_CASE(OneKeyManyValues) {
