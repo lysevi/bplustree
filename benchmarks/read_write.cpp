@@ -3,6 +3,7 @@
 #include <sstream>
 #include <map>
 #include <cstring>
+#include <iostream>
 struct BigData
 {
 	BigData(size_t i) { memset(this, (int)i, sizeof(BigData)); }

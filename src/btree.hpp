@@ -60,7 +60,6 @@ namespace trees{
 	template<class Key, class Value>
 	void BTree<Key, Value>::Node::insertChild(Key key, typename Node::Ptr C) {
 		if (key == this->vals.back().first) {
-			//this->childs.resize(this->childs.size() + 1);
             this->childs[childs_size]=C->id;
 			childs_size++;
 			return;
